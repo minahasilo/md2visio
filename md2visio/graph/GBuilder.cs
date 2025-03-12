@@ -1,34 +1,30 @@
 ﻿using md2visio.figure;
-using md2visio.mermaid;
+using md2visio.mermaid.cmn;
+using md2visio.mermaid.graph;
 
 namespace md2visio.graph
 {
-    internal class GBuilder
+    internal class GBuilder: FigureBuilder
     {
         static List<GNode> EmptyList = new List<GNode>();
-
-        SynContext ctx;
-        Stack<Graph> stack = new Stack<Graph>();
-        SttIterator iter;
-        int count = 1;
-
+        Stack<Graph> stack = new Stack<Graph>();        
         List<GNode> fromNodes = EmptyList, toNodes = EmptyList;
         GEdge edge = GEdge.Empty;
 
-        public GBuilder(SynContext ctx) { 
-            this.ctx = ctx;
-            iter = ctx.SttIterator();
+        public GBuilder(SttIterator iter): base(iter) 
+        { 
+            
         }
 
-        public void Build(string outputFile)
+        public override void Build(string outputFile)
         {
             while (iter.HasNext())
             {
                 SynState cur = iter.Next();
                 if (cur is SttMermaidStart) stack.Clear();
-                else if (cur is SttMermaidClose) Output(outputFile);
-                else if (cur is SttKeyword) BuildKeyword();
-                else if (cur is SttText)
+                else if (cur is SttMermaidClose) { Output(outputFile); break; }
+                else if (cur is GSttKeyword) BuildKeyword();
+                else if (cur is GSttText)
                 {
                     List<GNode> nodes = GatherNodes();
                     if (fromNodes.Count == 0) fromNodes = nodes;
@@ -39,8 +35,8 @@ namespace md2visio.graph
                         ConnectNodes();
                     }
                 }
-                else if(cur is SttLinkStart) BuildEdge();
-                else if(cur is SttNoLabelLink) BuildEdge();
+                else if(cur is GSttLinkStart) BuildEdge();
+                else if(cur is GSttNoLabelLink) BuildEdge();
                 else if (cur is SttComment) { }
                 else if (cur is SttConfig) { }
                 else if (cur is SttFinishFlag) { }
@@ -67,7 +63,7 @@ namespace md2visio.graph
         List<GNode> GatherNodes(List<GNode>? nodes = null)
         {
             SynState cur = iter.Current;
-            if (cur is not SttText) throw new SynException("expect graph node", ctx);
+            if (cur is not GSttText) throw new SynException("expected graph node", iter);
 
             if (nodes == null) nodes = new List<GNode>();
 
@@ -78,12 +74,12 @@ namespace md2visio.graph
 
             // shape
             SynState next = iter.PeekNext();
-            if (next is SttExtendShape)
+            if (next is GSttExtendShape)
             {
                 iter.Next();
                 node.NodeShape = GNodeShape.CreateExtend(next.Fragment);
             }
-            else if (next is SttPaired)
+            else if (next is GSttPaired)
             {
                 iter.Next();
                 string start = next.GetPart("start"),
@@ -92,7 +88,7 @@ namespace md2visio.graph
                 node.NodeShape = GNodeShape.CreatePaired(start, mid, close);
             }
             // &
-            else if (next is SttAmp)
+            else if (next is GSttAmp)
             {
                 iter.Next();
                 iter.Next();
@@ -106,24 +102,24 @@ namespace md2visio.graph
         {
             SynState state = iter.Current;
             edge = GEdge.Empty;
-            if (state is SttLinkStart)
+            if (state is GSttLinkStart)
             {
                 edge = new GEdge();
                 edge.StartTag = state.Fragment;
 
-                if (iter.Next() is not SttLinkLabel) throw new SynException("expect link label", ctx);
+                if (iter.Next() is not GSttLinkLabel) throw new SynException("expected link label", iter);
                 edge.Text = iter.Current.Fragment;
 
-                if (iter.Next() is not SttLinkEnd) throw new SynException("expect link end", ctx);
+                if (iter.Next() is not GSttLinkEnd) throw new SynException("expected link end", iter);
                 edge.EndTag = iter.Current.Fragment;
             }
-            else if (state is SttNoLabelLink)
+            else if (state is GSttNoLabelLink)
             {
                 edge = new GEdge();
                 edge.StartTag = state.Fragment;
                 edge.EndTag = state.Fragment;
 
-                if (iter.PeekNext() is SttPipedLinkText)
+                if (iter.PeekNext() is GSttPipedLinkText)
                 {
                     edge.Text = iter.Next().Fragment;
                 }
@@ -140,14 +136,14 @@ namespace md2visio.graph
             if (frag == "graph" || frag == "flowchart")
             {
                 Graph graph = new Graph();
-                graph.SetParam(iter.Next().PartList);
+                graph.SetParam(iter.Next().CompoList);
                 stack.Push(graph);
             }
             else if (frag == "subgraph")
             {
                 Graph graph = SuperContainer();
                 GSubgraph subgraph = new GSubgraph(graph);
-                subgraph.SetParam(iter.Next().PartList);
+                subgraph.SetParam(iter.Next().CompoList);
 
                 // add to parent graph
                 graph.AddSub(subgraph);
@@ -155,11 +151,11 @@ namespace md2visio.graph
             }
             else if (frag == "end")
             {
-                if (stack.Count == 0) throw new SynException("expect 'graph', 'flowchart' or 'subgraph'", ctx);
+                if (stack.Count == 0) throw new SynException("expected 'graph', 'flowchart' or 'subgraph'", iter);
                 stack.Pop();
             }
             else if (frag == "direction") {
-                if (sttNext is not SttKeywordParam) throw new SynException("expect keyword param", ctx);
+                if (sttNext is not GSttKeywordParam) throw new SynException("expected keyword param", iter);
 
                 stack.First().Direction = iter.Next().Fragment;
             }
@@ -173,7 +169,7 @@ namespace md2visio.graph
 
         Graph SuperContainer()
         {
-            if (stack.Count == 0) throw new SynException("expect a graph or subgraph", ctx);
+            if (stack.Count == 0) throw new SynException("expected a graph or subgraph", iter);
 
             return stack.First();
         }
@@ -182,15 +178,10 @@ namespace md2visio.graph
         {
             if (stack.Count == 0) return;
 
-            string name = Path.GetFileNameWithoutExtension(outputFile);
-            string ext = Path.GetExtension(outputFile);
-            string? dir = Path.GetDirectoryName(outputFile);
-
             Container nc = stack.First();
-            if (nc is Figure) nc.DownCast<Figure>().ToVisio($"{dir}\\{name}{count++}{ext}");
+            if (nc is Figure) nc.DownCast<Figure>().ToVisio(outputFile);
             stack.Clear();
         }
-
 
     }
 }

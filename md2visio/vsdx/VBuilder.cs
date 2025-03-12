@@ -4,7 +4,7 @@ using Visio = Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx
 {
-    internal class VBuilder
+    internal abstract class VBuilder
     {
         protected Figure figure;
 
@@ -19,12 +19,7 @@ namespace md2visio.vsdx
             visioPage = visioDoc.Pages[1]; // 获取活动页面
         }
 
-        public virtual void Build(string outputFile)
-        {                      
-            
-        }       
-
- 
+        public abstract void Build(string outputFile); 
 
 #pragma warning disable CA1416, CS8604
         public static string? GetVisioContentDirectory()

@@ -1,13 +1,11 @@
 ﻿using md2visio.figure;
-using md2visio.mermaid;
+using md2visio.mermaid.cmn;
 using md2visio.vsdx;
 
 namespace md2visio.graph
 {
     internal class Graph: Figure
-    {
-        public static new Graph Empty = new Graph(); 
-            
+    {           
         Dictionary<string, GSubgraph> subgraphDict = new Dictionary<string, GSubgraph>();
         protected LinkedList<GNode> alignedInnerNodes = new LinkedList<GNode>();
 
@@ -72,13 +70,7 @@ namespace md2visio.graph
                 subgraphDict.Add(subgraph.ID, subgraph);
                 nodeDict.Add(subgraph.ID, subgraph);
             }
-        }
-
-        public override void ToVisio(string path)
-        {
-            new VGraphBuilder(this).Build(path);
-        }
-        
+        }      
 
         public (GNode? linkedNode, RelativePos nodePos) LinkedNode(LinkedList<GNode> nodes2test)
         {
@@ -151,9 +143,14 @@ namespace md2visio.graph
             return LinkedNode(nodes2draw, this, excludeNodes);
         }
 
-        public virtual void SetParam(PartValueList list) {
-            string frag = list.Whole;
+        public virtual void SetParam(CompoList list) {
+            string frag = list.Entire;
             if (!string.IsNullOrEmpty(frag)) Direction = frag;
+        }
+
+        public override void ToVisio(string path)
+        {
+            new VBuilderG(this).Build(path);
         }
 
     }

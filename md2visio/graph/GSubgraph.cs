@@ -1,5 +1,6 @@
 ﻿using md2visio.figure;
 using md2visio.mermaid;
+using md2visio.mermaid.cmn;
 using Microsoft.Office.Interop.Visio;
 using System.Text;
 
@@ -40,7 +41,7 @@ namespace md2visio.graph
 
         public List<GEdge> OutputEdges { get; set; } = new List<GEdge>();
 
-        public override void SetParam(PartValueList valueList)
+        public override void SetParam(CompoList valueList)
         {
             StringBuilder t = new StringBuilder();
             foreach (var item in valueList.Values())
@@ -49,7 +50,7 @@ namespace md2visio.graph
                 else if(item.IsText()) t.Append(item.Value);
                 else if(item.IsQuoted()) t.Append(item.Value);
             }
-            if (t.Length == 0) throw new SynException("expect subgraph ID");
+            if (t.Length == 0) throw new SynException("expected subgraph ID");
             ID = t.ToString();
         }
     }

@@ -1,5 +1,5 @@
 ﻿using md2visio.figure;
-using md2visio.mermaid;
+using md2visio.mermaid.cmn;
 using System.Text.RegularExpressions;
 
 namespace md2visio.graph

@@ -1,19 +1,14 @@
-﻿using md2visio.graph;
+﻿using md2visio.figure;
+using md2visio.graph;
 using Microsoft.Office.Interop.Visio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace md2visio.vsdx
 {
-    internal class VBoundary
+    internal class VBoundary: IEmpty
     {
         public static readonly VBoundary Empty = new VBoundary();
 
-        double pinx, piny, width, height;
-
+        protected double pinx, piny, width, height;
         public double PinX { get { return pinx; } }
         public double PinY { get { return piny; } }
         public double Width { get { return width; } }  
@@ -56,15 +51,56 @@ namespace md2visio.vsdx
                 height = t - value;
             }
         }
+        public VBoundary() { }
 
-        VBoundary() { }
-
-        public VBoundary(Shape shape)
+        public VBoundary(double pinx, double piny, double width, double height)
         {
-            pinx = VShapeFactory.PinX(shape);
-            piny = VShapeFactory.PinY(shape);
-            width = VShapeFactory.Width(shape);
-            height = VShapeFactory.Height(shape);
+            this.pinx = pinx;
+            this.piny = piny;
+            this.width = width;
+            this.height = height;
+        }
+
+        public void AlignLeft(double left)
+        {
+            pinx = left + width / 2;
+        }
+
+        public void AlignTop(double top)
+        {
+            piny = top - height / 2;
+        }
+
+        public void AlignLeftTop(double left, double top)
+        {
+            AlignLeft(left);
+            AlignTop(top);
+        }
+
+        public void AlignRight(double right)
+        {
+            pinx = right - width / 2;
+        }
+
+        public void AlignBottom(double bottom)
+        {
+            piny = bottom + height / 2;
+        }
+
+        public void AlignRightBottom(double right, double bottom)
+        {
+            AlignRight(right);
+            AlignBottom(bottom);
+        }
+
+        public VBoundary Clone()
+        {
+            VBoundary clone = new VBoundary();
+            clone.pinx = pinx;
+            clone.piny = piny;  
+            clone.width = width;
+            clone.height = height;
+            return clone;
         }
 
         public static VBoundary Create(LinkedList<GNode> nodes)
@@ -75,7 +111,7 @@ namespace md2visio.vsdx
                 Shape? shape = node.VisioShape;
                 if (shape == null) continue;
 
-                VBoundary bnd2cmp = new VBoundary(shape);
+                VBoundary bnd2cmp = new VShapeBoundary(shape);
                 if (boundary == Empty) { boundary = bnd2cmp; continue; }
                 
                 ExpandBoundary(boundary, bnd2cmp);
@@ -89,6 +125,11 @@ namespace md2visio.vsdx
             ExpandBoundary(this, boundary);
         }
 
+        public void Expand(Shape shape)
+        {
+            Expand(new VShapeBoundary(shape));
+        }
+
         public static void ExpandBoundary(VBoundary bnd2expand, VBoundary bndCompare)
         {
             if(bndCompare == Empty) return;
@@ -97,6 +138,11 @@ namespace md2visio.vsdx
             if (bndCompare.Right > bnd2expand.Right) bnd2expand.Right = bndCompare.Right;
             if (bndCompare.Top > bnd2expand.Top) bnd2expand.Top = bndCompare.Top;
             if (bndCompare.Bottom < bnd2expand.Bottom) bnd2expand.Bottom = bndCompare.Bottom;
+        }
+
+        public bool IsEmpty()
+        {
+            return this == Empty;
         }
     }
 }

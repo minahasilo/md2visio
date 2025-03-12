@@ -73,14 +73,14 @@ namespace md2visio.graph
 
             if (shape != null && fixedShape != null)
             {
-                double w = VShapeFactory.ShapeSheetIU(fixedShape, "Width");
-                double h = VShapeFactory.ShapeSheetIU(fixedShape, "Height");
-                double x = VShapeFactory.ShapeSheetIU(fixedShape, "PinX");
-                double y = VShapeFactory.ShapeSheetIU(fixedShape, "PinY");
+                double w = VShapeDrawer.ShapeSheetIU(fixedShape, "Width");
+                double h = VShapeDrawer.ShapeSheetIU(fixedShape, "Height");
+                double x = VShapeDrawer.ShapeSheetIU(fixedShape, "PinX");
+                double y = VShapeDrawer.ShapeSheetIU(fixedShape, "PinY");
                 int reverse = (rpos == RelativePos.FRONT ? -1 : 1);
                 
-                double sw = VShapeFactory.ShapeSheetIU(shape, "Width");
-                double sh = VShapeFactory.ShapeSheetIU(shape, "Height");
+                double sw = VShapeDrawer.ShapeSheetIU(shape, "Width");
+                double sh = VShapeDrawer.ShapeSheetIU(shape, "Height");
                 GGrowthDirection grow = node.Container.GrowDirect;
                 if (grow.H == 0)
                 {

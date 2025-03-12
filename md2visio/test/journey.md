@@ -12,6 +12,5 @@ journey
       Go downstairs: 5: Me
       Sit down: 5: Me
     section Go home
-    	fad: 5: Me
     	Make tea: 3: Me
 `````

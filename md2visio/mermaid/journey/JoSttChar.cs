@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 
 namespace md2visio.mermaid.journey
 {
@@ -6,12 +6,11 @@ namespace md2visio.mermaid.journey
     {
         public override SynState NextState()
         {
-            if (JoSttTriple.IsTripleLine(Ctx)) return Forward<JoSttTriple>();
-            
             string? next = Ctx.Peek();
             if (next == null) return EndOfFile;
 
             if (next == "%")  return Forward<SttPercent>(); 
+            if (next == ":")  return Restore(Buffer.Length).Forward<JoSttTriple>();
             if (next == " ")  return Forward<JoSttWord>(); 
             if (next == "\t") return Forward<JoSttWord>(); 
             if (next == "\n") return Forward<SttFinishFlag>(); 

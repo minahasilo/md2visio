@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using md2visio.mermaid.graph.@internal;
 using Microsoft.Office.Interop.Visio;
 using System.Text;
@@ -35,7 +35,7 @@ namespace md2visio.mermaid.graph
                     break;
                 }
 
-                if (SttQuoted.IsQuotedSequence(Ctx))
+                if (SttQuoted.TestQuoted(Ctx))
                 {
                     AddText(text).AddCompo("\"", Ctx.TestGroups["quote"].Value);
                     Slide(Ctx.TestGroups["0"].Length);

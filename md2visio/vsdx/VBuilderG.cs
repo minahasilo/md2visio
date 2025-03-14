@@ -1,5 +1,5 @@
-﻿using md2visio.figure;
-using md2visio.graph;
+﻿using md2visio.struc.figure;
+using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 
@@ -19,19 +19,14 @@ namespace md2visio.vsdx
         public VBuilderG(Graph figure) : base(figure)
         {
             graph = figure;            
-            shapeDrawer = new VShapeDrawerG(visioApp);
+            shapeDrawer = new VShapeDrawerG(VisioApp);
         }
 
         override public void Build(string outputFile) 
         {
-            visioApp.Visible = true; 
             DrawNodes(graph);
             DrawEdges(graph);            
-            visioPage.ResizeToFitContents();
-
-            visioDoc.SaveAsEx(outputFile, 0);
-            visioDoc.Close();
-            visioApp.Quit();
+            SaveAndClose(outputFile);
         }
 
         void DrawEdges(Graph graph)

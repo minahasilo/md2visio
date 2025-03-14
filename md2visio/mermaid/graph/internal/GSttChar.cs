@@ -1,5 +1,4 @@
-﻿using md2visio.mermaid.cmn;
-using md2visio.mermaid.graph;
+﻿using md2visio.mermaid._cmn;
 
 namespace md2visio.mermaid.graph.@internal
 {
@@ -21,7 +20,7 @@ namespace md2visio.mermaid.graph.@internal
             if (next == "(") { return Forward<GSttWordFlag>(); }
             if (next == "<") { return Forward<GSttWordFlag>(); }
             if (next == "`") { return Forward<GSttBackQuote>(); }
-            if (next == "\"") { return Forward<SttQuoted>(); }
+            if (next == "\"") { return Forward<GSttQuoted>(); }
             if (next == "-") { return Forward<GSttMinus>(); }
             if (next == "=") { return Forward<GSttEqual>(); }
             if (next == "&") { return Forward<GSttAmp>(); }

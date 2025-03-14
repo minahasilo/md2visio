@@ -1,5 +1,5 @@
-﻿using md2visio.figure;
-using md2visio.journey;
+﻿using md2visio.struc.figure;
+using md2visio.struc.journey;
 
 namespace md2visio.vsdx
 {
@@ -9,18 +9,15 @@ namespace md2visio.vsdx
 
         public VBuilderJo(Figure figure) : base(figure)
         {
-            shapeDrawer = new VShapeDrawerJo(visioApp);
+            shapeDrawer = new VShapeDrawerJo(VisioApp);
         }
 
         public override void Build(string outputFile)
         {
             Journey jo = figure.DownCast<Journey>();
             shapeDrawer.DrawJounery(jo);
-            visioPage.ResizeToFitContents();
-
-            visioDoc.SaveAsEx(outputFile, 0);
-            visioDoc.Close();
-            visioApp.Quit();
+            
+            SaveAndClose(outputFile);
         }
     }
 }

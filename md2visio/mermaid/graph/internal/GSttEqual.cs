@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using md2visio.mermaid.graph;
 using System.Text.RegularExpressions;
 
@@ -12,9 +12,9 @@ namespace md2visio.mermaid.graph.@internal
             if (Buffer.Length > 0)
             {
                 if (GSttLinkStart.IsLinkStart(Ctx))
-                    return Restore(Buffer.Length).Clear().Forward<GSttLinkStart>();
+                    return Restore(Buffer.Length).ClearBufer().Forward<GSttLinkStart>();
                 if (GSttNoLabelLink.IsNoLabelLink(Ctx))
-                    return Restore(Buffer.Length).Clear().Forward<GSttNoLabelLink>();
+                    return Restore(Buffer.Length).ClearBufer().Forward<GSttNoLabelLink>();
 
                 throw new SynException("unexpected '='", Ctx);
             }

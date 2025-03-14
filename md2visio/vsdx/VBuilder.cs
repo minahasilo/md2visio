@@ -1,4 +1,5 @@
-﻿using md2visio.figure;
+﻿using md2visio.main;
+using md2visio.struc.figure;
 using Microsoft.Win32;
 using Visio = Microsoft.Office.Interop.Visio;
 
@@ -8,18 +9,37 @@ namespace md2visio.vsdx
     {
         protected Figure figure;
 
-        protected Visio.Application visioApp = new Visio.Application();
+        public static Visio.Application VisioApp = new Visio.Application();
         protected Visio.Document visioDoc;
         protected Visio.Page visioPage;
 
         public VBuilder(Figure figure) {
             this.figure = figure;            
 
-            visioDoc = visioApp.Documents.Add(""); // 添加一个新文档
+            VisioApp.Visible = AppConfig.Instance.Visible;
+            visioDoc = VisioApp.Documents.Add(""); // 添加一个新文档
             visioPage = visioDoc.Pages[1]; // 获取活动页面
         }
 
         public abstract void Build(string outputFile); 
+
+        public void SaveAndClose(string outputFile)
+        {
+            visioPage.ResizeToFitContents();
+
+            AppConfig config = AppConfig.Instance;
+            bool overwrite = true;
+            if (!config.Quiet && File.Exists(outputFile))
+            {
+                Console.WriteLine($"Output file '{outputFile}' exists, input Y to overwrite: ");
+                overwrite = (Console.ReadLine()?.ToLower() == "y");
+            }
+
+            if (overwrite) visioDoc.SaveAsEx(outputFile, 0);
+            else visioDoc.Saved = true;
+
+            visioDoc.Close();
+        }
 
 #pragma warning disable CA1416, CS8604
         public static string? GetVisioContentDirectory()
@@ -35,8 +55,8 @@ namespace md2visio.vsdx
                     object? value = key?.GetValue("Path");
                     if (value != null)
                     {
-                        string contentDir = System.IO.Path.Combine(value.ToString(), "Visio Content");
-                        if (System.IO.Directory.Exists(contentDir))
+                        string contentDir = Path.Combine(value.ToString(), "Visio Content");
+                        if (Directory.Exists(contentDir))
                         {
                             return contentDir;
                         }

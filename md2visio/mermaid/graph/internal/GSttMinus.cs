@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using System.Text.RegularExpressions;
 
 namespace md2visio.mermaid.graph.@internal
@@ -14,9 +14,9 @@ namespace md2visio.mermaid.graph.@internal
                 if (Regex.IsMatch(Buffer, "^[xo]$"))
                 {
                     if (GSttLinkStart.IsLinkStart(Ctx))
-                        return Clear().Restore(1).Forward<GSttLinkStart>();
+                        return ClearBufer().Restore(1).Forward<GSttLinkStart>();
                     else if (GSttNoLabelLink.IsNoLabelLink(Ctx))
-                        return Clear().Restore(1).Forward<GSttNoLabelLink>();
+                        return ClearBufer().Restore(1).Forward<GSttNoLabelLink>();
                     return Take().Forward<GSttChar>();
                 }
                 else if (GSttLinkStart.IsLinkStart(Ctx) ||

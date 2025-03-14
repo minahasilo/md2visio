@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using md2visio.mermaid.graph.@internal;
 using System.Text.RegularExpressions;
 
@@ -14,7 +14,7 @@ namespace md2visio.mermaid.graph
                 if (!GSttKeywordParam.HasParam(Ctx)) return Forward<GSttText>();
             }
 
-            Save(Buffer).Clear().SlideSpaces();
+            Save(Buffer).ClearBufer().SlideSpaces();
             if (GSttKeywordParam.HasParam(Ctx)) return Forward<GSttKeywordParam>();
 
             return Forward<GSttChar>();

@@ -1,9 +1,9 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using md2visio.mermaid.graph.@internal;
 
 namespace md2visio.mermaid.graph
 {
-    internal class SttQuoted : SynState
+    internal class GSttQuoted : SttQuoted
     {
 
         public override SynState NextState()
@@ -14,14 +14,9 @@ namespace md2visio.mermaid.graph
                 return Take().Forward<GSttChar>();
 
             if (Expect(@"(?s)""(?<quote>[^""]*)"""))
-                return Clear().Save(Sequence("quote")).Forward<GSttChar>();
+                return ClearBufer().Save(ExpectedGroup("quote")).Forward<GSttChar>();
 
             throw new SynException("syntax error", Ctx);
-        }
-
-        public static bool IsQuotedSequence(SynContext ctx)
-        {
-            return ctx.Test(@"^(?s)""(?<quote>[^""]*)""");
         }
 
     }

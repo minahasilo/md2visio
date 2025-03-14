@@ -1,9 +1,4 @@
-﻿using md2visio.mermaid.cmn;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using md2visio.mermaid._cmn;
 
 namespace md2visio.mermaid.journey
 {
@@ -11,11 +6,14 @@ namespace md2visio.mermaid.journey
     {
         public override SynState NextState()
         {
-            string triple = MatchedGroups[0].Value.Trim();
+            if(!IsTripleLine(Ctx)) throw new SynException("expected a triple", Ctx);
+
+            string triple = ExpectedGroups[0].Value.Trim();
             foreach (string s in triple.Split(":"))
             {
-                if (string.IsNullOrEmpty(s)) throw new SynException("task item can't be empty", Ctx);
-                AddCompo(s);
+                string trimed = s.Trim();
+                if (string.IsNullOrEmpty(trimed)) throw new SynException("task item can't be empty", Ctx);
+                AddCompo(trimed);
             }
 
             return Save(triple).Forward<JoSttChar>();

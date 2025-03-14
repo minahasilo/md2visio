@@ -2,7 +2,7 @@
 
 `````mermaid
 journey
-    %% journey test
+    %% journey : test
     title My working day
     section Go to work
       Make tea: 5: Me

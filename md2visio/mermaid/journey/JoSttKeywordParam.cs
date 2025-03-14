@@ -1,22 +1,12 @@
-﻿using md2visio.mermaid.cmn;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using md2visio.mermaid._cmn;
 
 namespace md2visio.mermaid.journey
 {
-    internal class JoSttKeywordParam : SynState
+    internal class JoSttKeywordParam : SttKeywordParam
     {
         public override SynState NextState()
         {
-            return Save(MatchedGroups["param"].Value).Forward<JoSttChar>();
-        }
-
-        public static bool HasParam(SynContext ctx)
-        {
-            return ctx.Expect(@"[^\S\n]*(?<param>\S.+?)\s*(?=\n)");
+            return Save(ExpectedGroups["param"].Value).Forward<JoSttChar>();
         }
     }
 }

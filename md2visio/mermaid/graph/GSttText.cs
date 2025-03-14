@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 using md2visio.mermaid.graph.@internal;
 using System.Text.RegularExpressions;
 
@@ -12,7 +12,7 @@ namespace md2visio.mermaid.graph
                 throw new SynException("syntax error", Ctx);
 
             string text = Buffer;
-            Clear().SlideSpaces();
+            ClearBufer().SlideSpaces();
             if (string.IsNullOrWhiteSpace(text)) return Forward<GSttChar>();
 
             if (Regex.IsMatch(text, @"^[\^=\|><]|~{1,2}$"))

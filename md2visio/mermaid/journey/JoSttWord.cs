@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
 
 namespace md2visio.mermaid.journey
 {
@@ -8,7 +8,8 @@ namespace md2visio.mermaid.journey
         {
             if (string.IsNullOrEmpty(Buffer)) return SlideSpaces().Forward<JoSttChar>();
 
-            return Forward<JoSttKeyword>();
+            if(JoSttKeyword.IsKeyword(Ctx)) return Forward<JoSttKeyword>();
+            return Take().Forward<JoSttChar>();
         }
     }
 }

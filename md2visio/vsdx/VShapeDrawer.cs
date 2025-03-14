@@ -1,4 +1,4 @@
-﻿using md2visio.graph;
+﻿using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -9,7 +9,6 @@ namespace md2visio.vsdx
     internal class VShapeDrawer
     {
         public static string VSSX = "md2visio.vssx";
-
         public Shape EmptyShape { get; }
         protected Application visioApp;
         protected Page visioPage;        
@@ -42,6 +41,26 @@ namespace md2visio.vsdx
                 }
             }
             return null;
+        }
+
+        public Shape DropText(string text, double pinx=0, double piny=0)
+        {
+            Shape shape = visioPage.Drop(GetMaster("[]"), pinx, piny);
+            shape.CellsU["LinePattern"].FormulaU = "=0";
+            shape.CellsU["FillPattern"].FormulaU = "=0";
+            shape.Text = text;
+            AdjustSize(shape);
+
+            return shape;
+        }
+
+        public void Rotate(Shape shape, double rad, bool clockwise = true)
+        {
+            rad = rad % (2 * double.Pi);
+            if (rad < double.Pi) rad = (clockwise ? -1 : 1) * rad;
+            else if (rad > double.Pi) rad = (clockwise ? 1 : -1) * (2 * double.Pi - rad);
+
+            SetShapeSheet(shape, "Angle", $"{rad} rad");
         }
 
         public void AdjustSize(Shape shape)

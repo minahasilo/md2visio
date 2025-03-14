@@ -1,5 +1,5 @@
-﻿using md2visio.graph;
-using md2visio.mermaid.cmn;
+﻿using md2visio.mermaid._cmn;
+using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx

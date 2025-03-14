@@ -1,5 +1,5 @@
-﻿using md2visio.figure;
-using md2visio.graph;
+﻿using md2visio.struc.figure;
+using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx

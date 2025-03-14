@@ -39,7 +39,10 @@ Development plan:
 - [ ] erDiagram
 - [ ] journey
 - [ ] gantt
-- [ ] pie
+- [x] pie
+  - [x] settings
+    - [x] `textPosition`
+    - [x] `pieOuterStrokeWidth`
 - [ ] quadrantChart
 - [ ] requirementDiagram
 - [ ] gitGraph

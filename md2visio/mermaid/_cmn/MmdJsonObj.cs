@@ -95,11 +95,11 @@ namespace md2visio.mermaid._cmn
 
         void Build()
         {
-            StringBuilder key = new StringBuilder();
-            StringBuilder value = new StringBuilder();
+            StringBuilder keyBuilder = new StringBuilder();
+            StringBuilder valueBuilder = new StringBuilder();
             bool withInQuote = false;
             bool withInSQuote = false;
-            bool appendKey = true;
+            bool bAppendKey = true;
             for (; index < textBuilder.Length; ++index)
             {
                 char c = textBuilder[index];
@@ -108,70 +108,73 @@ namespace md2visio.mermaid._cmn
 
                 if (withInQuote || withInSQuote)
                 {
-                    Append(key, value, c, appendKey);
+                    Append(keyBuilder, valueBuilder, c, bAppendKey);
                     continue;
                 }
 
-                if (c == ':')
+                if (c == ' ') continue;
+                else if (c == ':')
                 {
-                    appendKey = !appendKey;
+                    Assert("JSON key can't be empty", !string.IsNullOrEmpty(TrimSpaceAndQuote(keyBuilder)));
+                    bAppendKey = !bAppendKey;
                     continue;
                 }
                 else if (c == ',')
                 {
-                    appendKey = !appendKey;
-                    if(key.Length > 0) Add(key, value);
+                    bAppendKey = !bAppendKey;
+                    AddString(keyBuilder, valueBuilder);
                     continue;
                 }
                 else if (c == '{')
                 {
-                    if (key.Length > 0)
+                    if (TrimSpaceAndQuote(keyBuilder).Length > 0)
                     {
                         MmdJsonObj obj = new MmdJsonObj(textBuilder, index);
-                        Add(key, obj);
+                        AddJsonObj(keyBuilder, obj);
                         index = obj.Index;
                     }
                     continue;
                 }
                 else if (c == '}')
                 {
-                    TryAdd(key, value);
-                    break;
+                    AddString(keyBuilder, valueBuilder);
+                    return;
                 }
-                else if (c == ' ') continue;
+                else if(c == '[')
+                {
+                    MmdJsonArray arr = new MmdJsonArray(textBuilder, index);
+                    AddJsonObj(keyBuilder, arr);
+                    index = arr.Index;
+                    continue;
+                }
+                else if(c == ']')
+                {
+                    AddString(keyBuilder, valueBuilder);
+                    continue;
+                }
 
-                Append(key, value, c, appendKey);
+                Append(keyBuilder, valueBuilder, c, bAppendKey);
             }
-            TryAdd(key, value); // if not closed by '}'
+            AddString(keyBuilder, valueBuilder); // not closed by '}'
         }
 
-        void TryAdd(StringBuilder key, StringBuilder value)
+        void AddString(StringBuilder key, StringBuilder value)
         {
             string k = TrimSpaceAndQuote(key);
-            string v = TrimSpaceAndQuote(value);
-            if (k.Length > 0 && v.Length > 0)
-            {
-                data[k] = v;
-            }
-            key.Clear();
-            value.Clear();
-        }
+            if (k.Length == 0) return;
 
-        void Add(StringBuilder key, StringBuilder value)
-        {
-            string k = TrimSpaceAndQuote(key);
             string v = TrimSpaceAndQuote(value);
-            Assert("JSON key can't be empty", !string.IsNullOrEmpty(k));
             Assert("JSON value can't be empty", !string.IsNullOrEmpty(v));
             data[k] = v;
             key.Clear();
             value.Clear();
         }
 
-        void Add(StringBuilder key, object v)
+        void AddJsonObj(StringBuilder key, object v)
         {
             string k = TrimSpaceAndQuote(key);
             Assert("JSON key can't be empty", !string.IsNullOrEmpty(k));
+
             data[k] = v;
             key.Clear();
         }         

@@ -41,33 +41,33 @@ namespace md2visio.mermaid._cmn
 
                 if (c == ',')
                 {
-                    Add(item);
+                    AddString(item);
                     continue;
                 }
                 else if (c == '{')
                 {
                     MmdJsonObj obj = new MmdJsonObj(textBuilder, index);
-                    Add(obj);
+                    AddJsonObj(obj);
                     index = obj.Index;
                     continue;
                 }
                 else if (c == '[')
                 {
                     MmdJsonArray arr = new MmdJsonArray(textBuilder, index);
-                    Add(arr);
+                    AddJsonObj(arr);
                     index = arr.Index;
                     continue;
                 }
                 else if (c == ']')
                 {
-                    Add(item);
-                    break;
+                    AddString(item);
+                    return;
                 }
                 else if (c == ' ') continue;
 
                 item.Append(c);
             }
-            Add(item); // if not closed by ']'
+            AddString(item); // not closed by ']'
         }
 
         public bool IsEmpty()
@@ -75,22 +75,27 @@ namespace md2visio.mermaid._cmn
             return this == Empty;
         }
 
-        void Add(object value)
+        void AddString(StringBuilder item)
         {
-            if (value is StringBuilder)
-            { 
-                StringBuilder stringBuilder = (StringBuilder) value;
-                string v = TrimItem(stringBuilder);
-                if (v.Length > 0) list.Add(value); 
-                stringBuilder.Clear();
-            }
-            else list.Add(value);
+            string v = TrimSpaceAndQuote(item);
+            if (v.Length > 0) list.Add(v);
+            item.Clear();
         }
 
-        string TrimItem(StringBuilder stringBuilder)
+        void AddJsonObj(object value)
+        {
+            list.Add(value);
+        }
+
+        string TrimSpaceAndQuote(StringBuilder stringBuilder)
         {
             char[] trims = new char[] { '"', '\''};
             return stringBuilder.ToString().Trim().TrimStart(trims).TrimEnd(trims);
+        }
+        void Assert(string message, bool assert)
+        {
+            if (!assert)
+                throw new ArgumentException(message);
         }
     }
 }

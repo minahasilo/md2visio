@@ -5,7 +5,6 @@ using md2visio.mermaid.pie;
 using md2visio.struc.graph;
 using md2visio.struc.journey;
 using md2visio.struc.pie;
-using md2visio.vsdx;
 
 namespace md2visio.mermaid._cmn
 {

@@ -9,8 +9,45 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="mermaid\er\新文件夹\**" />
+    <EmbeddedResource Remove="mermaid\er\新文件夹\**" />
+    <None Remove="mermaid\er\新文件夹\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
     <PackageReference Include="WonderCircuits.Microsoft.Office.Interop.Visio" Version="15.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="mermaid\class\" />
+    <Folder Include="mermaid\sta\" />
+    <Folder Include="mermaid\seq\" />
+    <Folder Include="mermaid\sta2\" />
+    <Folder Include="mermaid\gantt\" />
+    <Folder Include="mermaid\req\" />
+    <Folder Include="mermaid\git\" />
+    <Folder Include="mermaid\c4\" />
+    <Folder Include="mermaid\er\" />
+    <Folder Include="mermaid\qua\" />
+    <Folder Include="mermaid\time\" />
+    <Folder Include="mermaid\zen\" />
+    <Folder Include="mermaid\san\" />
+    <Folder Include="mermaid\mind\" />
+    <Folder Include="mermaid\block\" />
+    <Folder Include="mermaid\xy\" />
+    <Folder Include="mermaid\packet\" />
+    <Folder Include="mermaid\kanban\" />
+    <Folder Include="mermaid\arc\" />
+    <Folder Include="struc\qua\" />
+    <Folder Include="struc\req\" />
+    <Folder Include="struc\san\" />
+    <Folder Include="struc\seq\" />
+    <Folder Include="struc\sta2\" />
+    <Folder Include="struc\sta\" />
+    <Folder Include="struc\time\" />
+    <Folder Include="struc\xy\" />
+    <Folder Include="struc\zen\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

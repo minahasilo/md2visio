@@ -17,10 +17,10 @@ namespace md2visio.struc.graph
             data["label"] = label.Content;
         }
 
-        public string Shape { get => data["shape"]; set => data["shape"] = value; }
+        public string Shape { get => $"{data["shape"]}"; set => data["shape"] = value; }
         public string Label
         {
-            get { label.Content = data["label"]; return label.Content; }
+            get { label.Content = $"{data["label"]}"; return label.Content; }
             set
             {
                 if (value?.Length > 0) data["label"] = value;
@@ -33,7 +33,7 @@ namespace md2visio.struc.graph
 
         public string GetData(string name)
         {
-            return data[name];
+            return $"{data[name]}";
         }
 
         public void SetData(string name, string value)

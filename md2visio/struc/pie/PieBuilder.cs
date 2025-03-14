@@ -24,7 +24,7 @@ namespace md2visio.struc.pie
                 }
                 if (cur is PieSttKeyword) { BuildKeyword(); }
                 if (cur is PieSttTuple) { BuildDataItem(); }
-                if (cur is SttComment) { }
+                if (cur is SttComment) { pie.InitSettingFromComment(cur.Fragment); }
                 if (cur is SttConfig) { }
             }
         }

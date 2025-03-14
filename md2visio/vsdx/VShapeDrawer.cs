@@ -68,11 +68,10 @@ namespace md2visio.vsdx
             if (string.IsNullOrEmpty(shape.Text)) return;
 
             string text = shape.Text;
-            // 获取文本格式，包括字体大小
             double fontSize = FontSize(shape, "mm");
             string fontName = FontName(visioApp, shape);
 
-            SizeF sizeF = MeasureTextSize(text, fontName, fontSize);
+            SizeF sizeF = MeasureTextSizeMM(text, fontName, fontSize);
 
             // 调整形状大小以适应文本
             //double marginH = ShapeSheet(shape, "LeftMargin", "mm") + ShapeSheet(shape, "RightMargin", "mm");
@@ -132,6 +131,60 @@ namespace md2visio.vsdx
             if (v2mm != 0) return 1 / v2mm;
 
             return 0;
+        }
+
+        public double MM2Pix(Shape shape)
+        {
+            double fontSizeMM = FontSize(shape, "mm");
+            SizeF size = MeasureTextSizePix(shape.Text, FontName(visioApp, shape), fontSizeMM);
+            if (fontSizeMM != 0) return size.Height / fontSizeMM;
+
+            return 0;
+        }
+
+        public double Pix2MM(Shape shape)
+        {
+            double mm2pix = MM2Pix(shape);
+            if (mm2pix != 0) return 1 / mm2pix;
+
+            return 0;
+        }
+
+        public double Pt2MM(Shape shape)
+        {
+            double pt = FontSize(shape, "pt");
+            double mm = FontSize(shape, "mm");            
+            if(pt != 0) return mm / pt;
+
+            return 0;
+        }
+
+        public double MM2Pt(Shape shape)
+        {
+            double pt2mm = Pt2MM(shape);
+            if( pt2mm != 0) return 1/ pt2mm;
+
+            return 0;
+        }
+
+        public (bool success, string unit, double unitVal) UnitValue(string? unitStr)
+        {
+            bool success = false;
+            string uname = string.Empty;
+            double result = 0;
+
+            if (unitStr != null)
+            {
+                unitStr = unitStr.Trim().ToLower();
+                if (unitStr.EndsWith("pt")) uname = "pt";
+                else if (unitStr.EndsWith("px")) uname = "px";
+                else if (unitStr.EndsWith("mm")) uname = "mm";
+
+                if (uname.Length > 0) unitStr = unitStr.Substring(0, unitStr.Length-uname.Length);
+                success = double.TryParse(unitStr, out result);
+            }
+
+            return (success, uname, result);
         }
 
         public static double FontSize(Shape shape, string unit)
@@ -247,29 +300,34 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "Rounding", rounding);
         }
 
-        public static SizeF MeasureTextSize(string text, string fontName, double fontSizeMM)
+        public static SizeF MeasureTextSizeMM(string text, string fontName, double fontSizeMM)
+        {
+#pragma warning disable CA1416
+            using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                SizeF textSizePixels = MeasureTextSizePix(text, fontName, fontSizeMM);
+                float widthMM = textSizePixels.Width * 25.4f / graphics.DpiX;
+                float heightMM = textSizePixels.Height * 25.4f / graphics.DpiY;
+
+                return new SizeF(widthMM, heightMM);
+            }
+        }
+
+        public static SizeF MeasureTextSizePix(string text, string fontName, double fontSizeMM)
         {
             // 获取当前屏幕的DPI
 #pragma warning disable CA1416
             using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
             {
-                float dpiX = graphics.DpiX;
-                float dpiY = graphics.DpiY;
-
                 // 将字体大小从mm转换为像素
-                float fontSizePixel = (float)(fontSizeMM * dpiX / 25.4);
+                float fontSizePixel = (float)(fontSizeMM * graphics.DpiX / 25.4);
 
                 // 创建Font对象
                 using (Drawing.Font font = new Drawing.Font(fontName, fontSizePixel))
                 {
                     // 测量字符串尺寸
-                    SizeF textSizePixels = graphics.MeasureString(text, font);
-
-                    // 将尺寸从像素转换回mm
-                    float widthMM = textSizePixels.Width * 25.4f / dpiX;
-                    float heightMM = textSizePixels.Height * 25.4f / dpiY;
-
-                    return new SizeF(widthMM, heightMM);
+                    SizeF textSizePixels = graphics.MeasureString(string.IsNullOrEmpty(text)?" ":text, font);
+                    return textSizePixels;
                 }
             }
         }

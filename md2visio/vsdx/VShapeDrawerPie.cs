@@ -1,6 +1,7 @@
 ﻿using md2visio.struc.figure;
 using md2visio.struc.pie;
 using Microsoft.Office.Interop.Visio;
+using System.Drawing;
 
 namespace md2visio.vsdx
 {
@@ -9,7 +10,7 @@ namespace md2visio.vsdx
         double drawnAngle = 0;
         VBoundary tagBound = VBoundary.Empty;
         double total = 0;
-        double r = 1.02;
+        double radius = 1.02;
         public VShapeDrawerPie(Application visioApp) : base(visioApp)
         {
         }
@@ -23,12 +24,12 @@ namespace md2visio.vsdx
             foreach(INode item in pie.InnerNodes.Values)
             {
                 Shape sector = DropSector(((PieDataItem)item), colors[ci++]);
-                r = Width(sector);
+                radius = Width(sector);
             }
 
             // title
-            Shape title = DropText(pie.Title);
-            AlignBottom(title, r + 0.05);
+            Shape title = DropText(pie.Title, new SizeF(2, 2));
+            AlignBottom(title, radius + 0.05);
 
             // outer stroke
             DrawOuterStroke(pie);
@@ -50,8 +51,8 @@ namespace md2visio.vsdx
             // textPosition
             double textPosition = 0.75;
             Pie pie = item.Container.DownCast<Pie>();
-            (bool success, double r) = pie.Setting.GetDouble("init.pie.textPosition");
-            if (success) textPosition = r;
+            (bool success, double tpos) = pie.Setting.GetDouble("init.pie.textPosition");
+            if (success) textPosition = tpos;
             (x, y) = ControlPoint(Width(sector) * textPosition, drawnAngle + rad / 2);
             DropText($"{(percent * 100).ToString("N0")}%", x, y);
 
@@ -61,7 +62,7 @@ namespace md2visio.vsdx
             if(tagBound.IsEmpty())
             {
                 tagBound = new VBoundary();
-                tagBound.AlignLeftTop(r + 0.5, r);
+                tagBound.AlignLeftTop(radius + 0.5, radius);
             }            
             DrawTag(color, item.ID, item.Data);
 
@@ -95,12 +96,12 @@ namespace md2visio.vsdx
             (bool success, string uname, double unitVal) = UnitValue(value);
             if (success)
             {
-                if (uname.EndsWith("pt")) outerStrokeWidth = Pt2MM(shape) * unitVal;
-                else if (uname.EndsWith("px")) outerStrokeWidth = Pix2MM(shape) * unitVal;
+                if (uname.EndsWith("pt")) outerStrokeWidth = Pt2MM() * unitVal;
+                else if (uname.EndsWith("px")) outerStrokeWidth = Pix2MM() * unitVal;
                 else if (uname.EndsWith("mm")) outerStrokeWidth = unitVal;
             }
 
-            string size = $"{VisioUnit2MM(shape)*r*2 + outerStrokeWidth} mm";
+            string size = $"{VisioUnit2MM(shape)*radius*2 + outerStrokeWidth} mm";
             SetWidth(shape, size);
             SetHeight(shape, size);
             SetShapeSheet(shape, "LineWeight", $"{outerStrokeWidth} mm");            

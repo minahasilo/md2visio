@@ -43,15 +43,20 @@ namespace md2visio.vsdx
             return null;
         }
 
-        public Shape DropText(string text, double pinx=0, double piny=0)
+        public Shape DropText(string text, SizeF paddingMM, double pinx=0, double piny=0)
         {
             Shape shape = visioPage.Drop(GetMaster("[]"), pinx, piny);
             shape.CellsU["LinePattern"].FormulaU = "=0";
             shape.CellsU["FillPattern"].FormulaU = "=0";
             shape.Text = text;
-            AdjustSize(shape);
+            AdjustSize(shape, paddingMM);
 
             return shape;
+        }
+
+        public Shape DropText(string text, double pinx = 0, double piny = 0)
+        {
+            return DropText(text, new SizeF(0, 0), pinx, piny);
         }
 
         public void Rotate(Shape shape, double rad, bool clockwise = true)
@@ -63,22 +68,25 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "Angle", $"{rad} rad");
         }
 
-        public void AdjustSize(Shape shape)
+        public void AdjustSize(Shape shape, SizeF paddingMM)
         {
             if (string.IsNullOrEmpty(shape.Text)) return;
 
-            string text = shape.Text;
-            double fontSize = FontSize(shape, "mm");
+            double fontSizeMM = FontSize(shape, "mm");
             string fontName = FontName(visioApp, shape);
+            SizeF sizeF = MeasureTextSizeMM(shape.Text, fontName, fontSizeMM);
 
-            SizeF sizeF = MeasureTextSizeMM(text, fontName, fontSize);
+            double leftMargin = ShapeSheet(shape, "LeftMargin", "mm"); 
+            double rightMargin = ShapeSheet(shape, "LeftMargin", "mm");
+            double topMargin = ShapeSheet(shape, "TopMargin", "mm");
+            double bottomMargin = ShapeSheet(shape, "BottomMargin", "mm");
+            shape.CellsU["Width"].FormulaU = $"={sizeF.Width + leftMargin + rightMargin + paddingMM.Width*2} mm";
+            shape.CellsU["Height"].FormulaU = $"={sizeF.Height + topMargin + bottomMargin + paddingMM.Height*2} mm"; 
+        }
 
-            // 调整形状大小以适应文本
-            //double marginH = ShapeSheet(shape, "LeftMargin", "mm") + ShapeSheet(shape, "RightMargin", "mm");
-            //double marginV = ShapeSheet(shape, "TopMargin", "mm") + ShapeSheet(shape, "BottomMargin", "mm");
-            double padding = VisioUnit2MM(shape) * GNode.PADDING;
-            shape.CellsU["Width"].FormulaU = $"={sizeF.Width} mm";
-            shape.CellsU["Height"].FormulaU = $"={sizeF.Height + padding} mm"; 
+        public void AdjustSize(Shape shape)
+        {
+            AdjustSize(shape, new SizeF(0, 0));
         }
         
         public static void MoveTo(Shape shape, double pinx, double piny)
@@ -129,40 +137,6 @@ namespace md2visio.vsdx
         {
             double v2mm = VisioUnit2MM(shape);
             if (v2mm != 0) return 1 / v2mm;
-
-            return 0;
-        }
-
-        public double MM2Pix(Shape shape)
-        {
-            double fontSizeMM = FontSize(shape, "mm");
-            SizeF size = MeasureTextSizePix(shape.Text, FontName(visioApp, shape), fontSizeMM);
-            if (fontSizeMM != 0) return size.Height / fontSizeMM;
-
-            return 0;
-        }
-
-        public double Pix2MM(Shape shape)
-        {
-            double mm2pix = MM2Pix(shape);
-            if (mm2pix != 0) return 1 / mm2pix;
-
-            return 0;
-        }
-
-        public double Pt2MM(Shape shape)
-        {
-            double pt = FontSize(shape, "pt");
-            double mm = FontSize(shape, "mm");            
-            if(pt != 0) return mm / pt;
-
-            return 0;
-        }
-
-        public double MM2Pt(Shape shape)
-        {
-            double pt2mm = Pt2MM(shape);
-            if( pt2mm != 0) return 1/ pt2mm;
 
             return 0;
         }
@@ -300,6 +274,38 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "Rounding", rounding);
         }
 
+        public static double Pt2MM()
+        {
+            // 1 pt = 1/72 英寸, 1 英寸= 25.4 mm。
+            return 1 / 72f * 25.4;
+        }
+
+        public static double MM2Pt()
+        {
+            double pt2mm = Pt2MM();
+            if (pt2mm != 0) return 1 / pt2mm;
+
+            return 0;
+        }
+
+        public static double MM2Pix()
+        {
+#pragma warning disable CA1416
+            using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                // 每英寸有25.4毫米
+                return graphics.DpiX / 25.4f;
+            }
+        }
+
+        public static double Pix2MM()
+        {
+            double mm2pix = MM2Pix();
+            if (mm2pix != 0) return 1 / mm2pix;
+
+            return 0;
+        }
+
         public static SizeF MeasureTextSizeMM(string text, string fontName, double fontSizeMM)
         {
 #pragma warning disable CA1416
@@ -315,18 +321,13 @@ namespace md2visio.vsdx
 
         public static SizeF MeasureTextSizePix(string text, string fontName, double fontSizeMM)
         {
-            // 获取当前屏幕的DPI
 #pragma warning disable CA1416
             using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
             {
-                // 将字体大小从mm转换为像素
-                float fontSizePixel = (float)(fontSizeMM * graphics.DpiX / 25.4);
-
-                // 创建Font对象
-                using (Drawing.Font font = new Drawing.Font(fontName, fontSizePixel))
+                float fontSizePt = (float) (fontSizeMM * MM2Pt());
+                using (Drawing.Font font = new Drawing.Font(fontName, fontSizePt))
                 {
-                    // 测量字符串尺寸
-                    SizeF textSizePixels = graphics.MeasureString(string.IsNullOrEmpty(text)?" ":text, font);
+                    SizeF textSizePixels = graphics.MeasureString(string.IsNullOrEmpty(text) ? " " : text, font);
                     return textSizePixels;
                 }
             }

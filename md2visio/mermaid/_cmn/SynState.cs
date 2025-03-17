@@ -18,7 +18,7 @@ namespace md2visio.mermaid._cmn
         public CompoList CompoList { get { return compoList; } }
         public string Buffer { get { return Ctx.Cache.ToString(); } }
 
-        public SynState ClearBufer()
+        public SynState ClearBuffer()
         {
             Ctx.ClearCache();
             return this;

@@ -14,9 +14,9 @@ namespace md2visio.mermaid.graph.@internal
                 if (Regex.IsMatch(Buffer, "^[xo]$"))
                 {
                     if (GSttLinkStart.IsLinkStart(Ctx))
-                        return ClearBufer().Restore(1).Forward<GSttLinkStart>();
+                        return ClearBuffer().Restore(1).Forward<GSttLinkStart>();
                     else if (GSttNoLabelLink.IsNoLabelLink(Ctx))
-                        return ClearBufer().Restore(1).Forward<GSttNoLabelLink>();
+                        return ClearBuffer().Restore(1).Forward<GSttNoLabelLink>();
                     return Take().Forward<GSttChar>();
                 }
                 else if (GSttLinkStart.IsLinkStart(Ctx) ||
@@ -31,7 +31,7 @@ namespace md2visio.mermaid.graph.@internal
             }
 
             // right
-            if (SttConfig.IsConfig(Ctx)) return Forward<SttConfig>();
+            if (SttFrontMatter.IsConfig(Ctx)) return Forward<SttFrontMatter>();
             if (GSttLinkStart.IsLinkStart(Ctx)) return Forward<GSttLinkStart>();
             else if (GSttNoLabelLink.IsNoLabelLink(Ctx)) return Forward<GSttNoLabelLink>();
 

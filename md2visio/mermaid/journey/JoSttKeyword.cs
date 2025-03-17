@@ -7,9 +7,7 @@ namespace md2visio.mermaid.journey
     {
         public override SynState NextState()
         {
-            //if (!IsKeyword(Ctx)) throw new SynException($"unknown keyword '{Buffer}'", Ctx);
-
-            Save(Buffer).ClearBufer();
+            Save(Buffer).ClearBuffer();
             if (JoSttKeywordParam.HasParam(Ctx)) return Forward<JoSttKeywordParam>();
             else return Forward<JoSttChar>();
         }

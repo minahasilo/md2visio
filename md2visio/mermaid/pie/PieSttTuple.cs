@@ -7,7 +7,7 @@ namespace md2visio.mermaid.pie
     {
         public override SynState NextState()
         {
-            if(Buffer.Length > 0) Restore(Buffer.Length).ClearBufer();
+            if(Buffer.Length > 0) Restore(Buffer.Length).ClearBuffer();
             if (!IsTupleLine(Ctx)) throw new SynException("expected a tuple");
 
             string tuple = ExpectedGroups[0].Value.Trim();
@@ -15,7 +15,7 @@ namespace md2visio.mermaid.pie
             AddToCompo(tuple.Substring(0, index));
             AddToCompo(tuple.Substring(index + 1, tuple.Length - index - 1));
 
-            return ClearBufer().Save(tuple).Forward<PieSttChar>();
+            return ClearBuffer().Save(tuple).Forward<PieSttChar>();
         }
 
         void AddToCompo(string compo)

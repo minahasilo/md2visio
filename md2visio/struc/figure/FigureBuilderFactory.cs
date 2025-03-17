@@ -41,7 +41,7 @@ namespace md2visio.struc.figure
         void BuildFigure(string figureType)
         {
             if (!builderDict.ContainsKey(figureType)) 
-                throw new NotImplementedException($"{figureType} build not implemented");
+                throw new NotImplementedException($"'{figureType}' builder not implemented");
 
             Type type = builderDict[figureType];
             object? obj = Activator.CreateInstance(type, iter);

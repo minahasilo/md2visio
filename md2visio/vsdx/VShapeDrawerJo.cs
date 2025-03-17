@@ -133,10 +133,11 @@ namespace md2visio.vsdx
 
             Shape shapeTask = visioPage.Drop(master, 0, 0);
             shapeTask.Text = task.Name;
-            double minWidth = Width(shapeTask);
+            double minWidth = Width(shapeTask), 
+                minHeight = Height(shapeTask);
             AdjustSize(shapeTask);
-            if(Width(shapeTask) < minWidth) 
-                SetShapeSheet(shapeTask, "Width", $"={minWidth}");
+            if (Width(shapeTask) < minWidth) SetWidth(shapeTask, $"{minWidth}");
+            if (Height(shapeTask) < minHeight) SetHeight(shapeTask, $"{minHeight}");
             if(task.Section != null) 
                 SetFillForegnd(shapeTask, colorMap[task.Section.ID]);
             SetRounding(shapeTask, "0.6 mm");

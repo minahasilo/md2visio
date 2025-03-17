@@ -12,7 +12,7 @@ namespace md2visio.mermaid.graph
                 throw new SynException("syntax error", Ctx);
 
             string text = Buffer;
-            ClearBufer().SlideSpaces();
+            ClearBuffer().SlideSpaces();
             if (string.IsNullOrWhiteSpace(text)) return Forward<GSttChar>();
 
             if (Regex.IsMatch(text, @"^[\^=\|><]|~{1,2}$"))

@@ -8,7 +8,6 @@ namespace md2visio.struc.figure
         string direction = "LR";
         GGrowthDirection shift;
         Container? parent = null;
-
         public Container? Parent
         {
             get => parent;

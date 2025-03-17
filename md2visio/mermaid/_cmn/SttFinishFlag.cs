@@ -7,7 +7,7 @@ namespace md2visio.mermaid._cmn
         public override SynState NextState()
         {
             // \n or ;
-            return Save(Take().Buffer).ClearBufer().Forward<SttCtxChar>();
+            return Save(Take().Buffer).ClearBuffer().Forward<SttCtxChar>();
         }
     }
 }

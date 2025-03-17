@@ -1,8 +1,9 @@
-﻿using System.Text;
+﻿using md2visio.struc.figure;
+using System.Text;
 
 namespace md2visio.mermaid._cmn
 {
-    internal class MmdJsonObj
+    internal class MmdJsonObj: ValueGetter, IEmpty
     {
         public static MmdJsonObj Empty = new MmdJsonObj();
 
@@ -24,61 +25,38 @@ namespace md2visio.mermaid._cmn
             this.textBuilder = textBuilder;
             this.index = index;
             Build();
-        }
+        }       
 
-        public string? GetString(string keyPath)
-        {
-            return GetValue<string>(keyPath);
-        }
-
-        public (bool success, int r) GetInt(string keyPath)
-        {
-            string? val = GetValue<string>(keyPath);
-            int r = 0;
-            bool success = int.TryParse(val, out r);
-            return (success, r);
-        }
-
-        public (bool success, double r) GetDouble(string keyPath)
-        {
-            string? val = GetValue<string>(keyPath);
-            double r = 0;
-            bool success = double.TryParse(val, out r);
-            return (success, r);
-        }
-
-        T? GetValue<T>(string keyPath) where T : class
+        public override T? GetValue<T>(string keyPath) where T : class
         {
             if (!keyPath.Contains("."))
             {
-                if (data.ContainsKey(keyPath) && 
-                    data[keyPath] is T) 
-                    return (T)data[keyPath];
+                if (this[keyPath] is T) return data[keyPath] as T;
             }
             else
             {
                 string[] path = keyPath.Split('.');
                 int count = path.Length;
-                MmdJsonObj obj = this;
-                object? result = null;
+                object? result = this;
                 foreach (string pathItem in path)
                 {
+                    if (result == null) break;
+
                     --count;
-                    result = obj.GetValue<object>(pathItem);
-                    if (result is MmdJsonObj) obj = (MmdJsonObj) result;
-                    else break;
+                    if(result is MmdJsonArray) result = (result as MmdJsonArray)?[pathItem];
+                    else if(result is MmdJsonObj) result = (result as MmdJsonObj)?[pathItem];
                 }
-                if (count == 0 && result is T) return (T) result;
+                if (count == 0 && result is T) return result as T;
             }
             return null;
         }
 
-        public object this[string key]
+        public object? this[string key]
         {
-            get { return data[key]; }
+            get { return data.ContainsKey(key) ? data[key] : null; }
             set
             {
-                data[key] = value;
+                if(value != null) data[key] = value;
             }
         }
 
@@ -195,6 +173,11 @@ namespace md2visio.mermaid._cmn
         {
             if (!assert) 
                 throw new ArgumentException(message);
+        }
+
+        public bool IsEmpty()
+        {
+            return this == Empty;
         }
     }
 }

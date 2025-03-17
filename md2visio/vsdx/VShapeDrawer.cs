@@ -187,6 +187,11 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "Width", width);
         }
 
+        public static void SetWidth(Shape shape, double width)
+        {
+            SetShapeSheet(shape, "Width", $"{width}");
+        }
+
         public static double Height(Shape shape)
         {
             return shape.CellsU["Height"].ResultIU;
@@ -195,6 +200,11 @@ namespace md2visio.vsdx
         public static void SetHeight(Shape shape, string height)
         {
             SetShapeSheet(shape, "Height", height);
+        }
+
+        public static void SetHeight(Shape shape, double height)
+        {
+            SetShapeSheet(shape, "Height", $"{height}");
         }
 
         public static double LeftMargin(Shape shape)

@@ -14,7 +14,7 @@ namespace md2visio.mermaid.graph
                 return Take().Forward<GSttChar>();
 
             if (Expect(@"(?s)""(?<quote>[^""]*)"""))
-                return ClearBufer().Save(ExpectedGroup("quote")).Forward<GSttChar>();
+                return ClearBuffer().Save(ExpectedGroup("quote")).Forward<GSttChar>();
 
             throw new SynException("syntax error", Ctx);
         }

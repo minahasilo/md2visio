@@ -12,9 +12,9 @@ namespace md2visio.mermaid.graph.@internal
             if (Buffer.Length > 0)
             {
                 if (GSttLinkStart.IsLinkStart(Ctx))
-                    return Restore(Buffer.Length).ClearBufer().Forward<GSttLinkStart>();
+                    return Restore(Buffer.Length).ClearBuffer().Forward<GSttLinkStart>();
                 if (GSttNoLabelLink.IsNoLabelLink(Ctx))
-                    return Restore(Buffer.Length).ClearBufer().Forward<GSttNoLabelLink>();
+                    return Restore(Buffer.Length).ClearBuffer().Forward<GSttNoLabelLink>();
 
                 throw new SynException("unexpected '='", Ctx);
             }

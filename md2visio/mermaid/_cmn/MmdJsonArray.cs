@@ -3,7 +3,7 @@ using System.Text;
 
 namespace md2visio.mermaid._cmn
 {
-    internal class MmdJsonArray: IEmpty
+    internal class MmdJsonArray: ValueGetter, IEmpty
     {
         public static readonly MmdJsonArray Empty = new MmdJsonArray();
         List<object> list = new List<object>();
@@ -70,6 +70,21 @@ namespace md2visio.mermaid._cmn
             AddString(item); // not closed by ']'
         }
 
+        public object? this[string key]
+        {
+            get
+            {
+                int v = 0; 
+                if(!int.TryParse(key, out v)) return null;
+                return this[v];
+            }
+        }
+
+        public object? this[int index]
+        {
+            get { return index >=0 && index < list.Count ? list[index] : null; }
+        }
+
         public bool IsEmpty()
         {
             return this == Empty;
@@ -92,10 +107,11 @@ namespace md2visio.mermaid._cmn
             char[] trims = new char[] { '"', '\''};
             return stringBuilder.ToString().Trim().TrimStart(trims).TrimEnd(trims);
         }
-        void Assert(string message, bool assert)
+
+        public override T? GetValue<T>(string keyPath) where T : class
         {
-            if (!assert)
-                throw new ArgumentException(message);
+            if (this[keyPath] is T) return this[keyPath] as T;
+            return null;
         }
     }
 }

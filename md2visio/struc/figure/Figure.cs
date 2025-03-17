@@ -5,7 +5,9 @@ namespace md2visio.struc.figure
     internal abstract class Figure : Container, IEmpty
     {
         public static readonly Figure Empty = new EmptyFigure();
-        public MmdJsonObj Setting { get; set; } = MmdJsonObj.Empty;
+        public MmdFrontMatter FrontMatter { get; set; } = MmdFrontMatter.Empty;
+        public MmdJsonObj Directive { get; set; } = MmdJsonObj.Empty;
+
         public Figure()
         {
         }
@@ -15,12 +17,12 @@ namespace md2visio.struc.figure
             return this == Empty;
         }
 
-        public MmdJsonObj InitSetting(string setting)
+        public MmdJsonObj InitDirective(string setting)
         {                 
             try
             {                
-                Setting = new MmdJsonObj(setting);
-                return Setting;
+                Directive = new MmdJsonObj(setting);
+                return Directive;
             }
             catch (ArgumentException)
             {
@@ -28,13 +30,18 @@ namespace md2visio.struc.figure
             }
         }
 
-        public MmdJsonObj InitSettingFromComment(string comment)
+        public MmdJsonObj InitDirectiveFromComment(string comment)
         {
             if (!comment.TrimEnd(' ').EndsWith("%%")) return MmdJsonObj.Empty;
 
             char[] trims = new char[] { '%', '\t', '\n', '\r', '\f', ' ' };
             string setting = comment.TrimStart(trims).TrimEnd(trims);
-            return InitSetting(setting);
+            return InitDirective(setting);
+        }
+
+        public MmdFrontMatter InitFrontMatter(string frontMatter)
+        {
+            return FrontMatter = new MmdFrontMatter(frontMatter);
         }
 
         public abstract void ToVisio(string path);

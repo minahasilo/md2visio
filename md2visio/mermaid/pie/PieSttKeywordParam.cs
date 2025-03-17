@@ -1,5 +1,6 @@
 ﻿using md2visio.mermaid._cmn;
 using Microsoft.Office.Interop.Visio;
+using System.Text;
 
 namespace md2visio.mermaid.pie
 {
@@ -19,25 +20,25 @@ namespace md2visio.mermaid.pie
                 string item = items[i];
                 if(string.IsNullOrEmpty(item)) continue;
 
-                if(item == "showData") dict.Add(item, item);
-                else if(item == "title") i = SetTitle(dict, items, i + 1);
+                if (item == "showData") dict.Add(item, item);
+                else if (item == "title")
+                {
+                    SetTitle(dict, items, i + 1);
+                    break;
+                }
             }
             return dict;
         }
 
-        int SetTitle(Dictionary<string, string> dict, string[] items, int index)
+        void SetTitle(Dictionary<string, string> dict, string[] items, int index)
         {
+            StringBuilder title = new StringBuilder();
             while (index < items.Length)
             {
                 string item = items[index++];
-                if (!string.IsNullOrEmpty(item))
-                {
-                    dict.Add("title", item);
-                    break;
-                } 
+                title.Append(item).Append(' ');
             }
-
-            return index;
+            dict.Add("title", title.ToString().Trim());
         }
 
     }

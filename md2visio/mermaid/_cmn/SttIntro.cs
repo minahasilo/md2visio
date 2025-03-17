@@ -7,7 +7,7 @@
             string? next = Ctx.Peek();
             if (next == null) return EndOfFile;
 
-            if (next == "-") { return Forward<SttConfig>(); }
+            if (next == "-") { return Forward<SttFrontMatter>(); }
             if (next == "%") { return Forward<SttPercent>(); }
             if (next == " ") { return Forward<SttWordFlag>(); }
             if (next == "\t") { return Forward<SttWordFlag>(); }

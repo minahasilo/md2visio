@@ -10,7 +10,7 @@ namespace md2visio.mermaid.pie
         {
             if (!IsKeyword(Ctx)) throw new SynException($"unknown keyword '{Buffer}'", Ctx);
 
-            Save(Buffer).ClearBufer();
+            Save(Buffer).ClearBuffer();
             if (PieSttKeywordParam.HasParam(Ctx)) return Forward<PieSttKeywordParam>();
             else return Forward<PieSttChar>();
         }

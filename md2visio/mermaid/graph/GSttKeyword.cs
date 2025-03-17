@@ -14,7 +14,7 @@ namespace md2visio.mermaid.graph
                 if (!GSttKeywordParam.HasParam(Ctx)) return Forward<GSttText>();
             }
 
-            Save(Buffer).ClearBufer().SlideSpaces();
+            Save(Buffer).ClearBuffer().SlideSpaces();
             if (GSttKeywordParam.HasParam(Ctx)) return Forward<GSttKeywordParam>();
 
             return Forward<GSttChar>();

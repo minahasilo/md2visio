@@ -51,7 +51,7 @@ namespace md2visio.vsdx
             // textPosition
             double textPosition = 0.75;
             Pie pie = item.Container.DownCast<Pie>();
-            (bool success, double tpos) = pie.Setting.GetDouble("init.pie.textPosition");
+            (bool success, double tpos) = pie.Directive.GetDouble("init.pie.textPosition");
             if (success) textPosition = tpos;
             (x, y) = ControlPoint(Width(sector) * textPosition, drawnAngle + rad / 2);
             DropText($"{(percent * 100).ToString("N0")}%", x, y);
@@ -64,12 +64,12 @@ namespace md2visio.vsdx
                 tagBound = new VBoundary();
                 tagBound.AlignLeftTop(radius + 0.5, radius);
             }            
-            DrawTag(color, item.ID, item.Data);
+            DrawTag(color, item.ID, item.Data, pie.ShowData);
 
             return sector;
         }
 
-        void DrawTag(Tuple<int,int,int> color, string title, double data)
+        void DrawTag(Tuple<int,int,int> color, string title, double data, bool showData)
         {
             Shape tag = visioPage.Drop(GetMaster("[]"), 0, 0);
             SetFillForegnd(tag, color);
@@ -79,9 +79,10 @@ namespace md2visio.vsdx
             tagBound.Right = tagBound.Left + Width(tag);
             tagBound.Bottom = tagBound.Top - Height(tag);
 
-            Shape text = DropText($"{title} [{data.ToString("N2")}]", 0, PinY(tag));
+            string text = string.Format("{0}{1}", title, showData ? $" [{data.ToString("N2")}]" : "");
+            Shape textShape = DropText(text, 0, PinY(tag));
             visioApp.DoCmd((short)VisUICmds.visCmdTextHAlignLeft);
-            AlignLeft(text, new VShapeBoundary(tag).Right + 0.01);
+            AlignLeft(textShape, new VShapeBoundary(tag).Right + 0.01);
 
             tagBound.AlignTop(tagBound.Bottom - 0.02);
         }
@@ -92,7 +93,7 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "FillPattern", "0");
 
             double outerStrokeWidth = 0.2646; // 0.2646 mm = 0.75 pt
-            string? value = pie.Setting.GetString("init.themeVariables.pieOuterStrokeWidth");
+            string? value = pie.Directive.GetString("init.themeVariables.pieOuterStrokeWidth");
             (bool success, string uname, double unitVal) = UnitValue(value);
             if (success)
             {

@@ -57,6 +57,10 @@
             "WonderCircuits.Microsoft.Office.Interop.Visio": {
               "target": "Package",
               "version": "[15.0.0, )"
+            },
+            "YamlDotNet": {
+              "target": "Package",
+              "version": "[16.3.0, )"
             }
           },
           "imports": [

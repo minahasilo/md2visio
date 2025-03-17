@@ -1,6 +1,6 @@
 ```mermaid
 %%{init: {"pie": {"textPosition": 0.8}, "themeVariables": {"pieOuterStrokeWidth": "5px"}} }%%
-pie showData
+pie showData title Pets adopted by volunteers
 	%% pie: test
     title Key elements in Product X
     "Calcium:" : 42.96

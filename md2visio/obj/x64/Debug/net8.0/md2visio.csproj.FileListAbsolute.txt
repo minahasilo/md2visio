@@ -22,3 +22,4 @@ C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\md2visio.
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\md2visio.genruntimeconfig.cache
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\ref\md2visio.dll
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\md2visio.sourcelink.json
+C:\Users\Megre\Documents\GitHub\md2visio\md2visio\bin\x64\Debug\net8.0\YamlDotNet.dll

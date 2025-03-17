@@ -40,7 +40,7 @@ Development plan:
 - [ ] journey
 - [ ] gantt
 - [x] pie
-  - [x] settings
+  - [x] directive
     - [x] `textPosition`
     - [x] `pieOuterStrokeWidth`
 - [ ] quadrantChart
@@ -53,6 +53,11 @@ Development plan:
 - [ ] sankey-beta
 - [ ] xychart-beta
 - [ ] block-beta
-- [ ] packet-beta
+- [x] packet-beta
+  - [x] frontmeter
+    - [x] title
 - [ ] kanban
 - [ ] architecture-beta
+- [ ] Configuration
+  - [ ] frontmeter
+  - [ ] directive

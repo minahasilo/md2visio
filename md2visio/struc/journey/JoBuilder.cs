@@ -24,7 +24,7 @@ namespace md2visio.struc.journey
                 if (cur is JoSttKeyword) { BuildKeyword(); }
                 if (cur is JoSttTriple) { BuildTask(); }
                 if (cur is SttComment) { }
-                if (cur is SttConfig) { }
+                if (cur is SttFrontMatter) { }
             }
         }
 

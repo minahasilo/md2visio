@@ -38,7 +38,7 @@ namespace md2visio.struc.graph
                 else if (cur is GSttLinkStart) BuildEdge();
                 else if (cur is GSttNoLabelLink) BuildEdge();
                 else if (cur is SttComment) { }
-                else if (cur is SttConfig) { }
+                else if (cur is SttFrontMatter) { }
                 else if (cur is SttFinishFlag) { }
             }
         }

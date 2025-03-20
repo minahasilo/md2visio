@@ -23,3 +23,6 @@ C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\md2visio.
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\ref\md2visio.dll
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\obj\x64\Debug\net8.0\md2visio.sourcelink.json
 C:\Users\Megre\Documents\GitHub\md2visio\md2visio\bin\x64\Debug\net8.0\YamlDotNet.dll
+C:\Users\Megre\Documents\GitHub\md2visio\md2visio\bin\x64\Debug\net8.0\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll
+C:\Users\Megre\Documents\GitHub\md2visio\md2visio\bin\x64\Debug\net8.0\Microsoft.VisualStudio.Interop.dll
+C:\Users\Megre\Documents\GitHub\md2visio\md2visio\bin\x64\Debug\net8.0\stdole.dll

@@ -1,10 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "npayt+HaZrg=",
+  "dgSpecHash": "an+3jHpk/sM=",
   "success": true,
   "projectFilePath": "C:\\Users\\Megre\\Documents\\GitHub\\md2visio\\md2visio\\md2visio.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Megre\\.nuget\\packages\\microsoft.visualstudio.imaging.interop.14.0.designtime\\17.13.40008\\microsoft.visualstudio.imaging.interop.14.0.designtime.17.13.40008.nupkg.sha512",
+    "C:\\Users\\Megre\\.nuget\\packages\\microsoft.visualstudio.interop\\17.13.40008\\microsoft.visualstudio.interop.17.13.40008.nupkg.sha512",
     "C:\\Users\\Megre\\.nuget\\packages\\microsoft.win32.systemevents\\9.0.1\\microsoft.win32.systemevents.9.0.1.nupkg.sha512",
+    "C:\\Users\\Megre\\.nuget\\packages\\stdole\\17.13.40008\\stdole.17.13.40008.nupkg.sha512",
     "C:\\Users\\Megre\\.nuget\\packages\\system.drawing.common\\9.0.1\\system.drawing.common.9.0.1.nupkg.sha512",
     "C:\\Users\\Megre\\.nuget\\packages\\wondercircuits.microsoft.office.core\\15.0.0\\wondercircuits.microsoft.office.core.15.0.0.nupkg.sha512",
     "C:\\Users\\Megre\\.nuget\\packages\\wondercircuits.microsoft.office.interop.visio\\15.0.0\\wondercircuits.microsoft.office.interop.visio.15.0.0.nupkg.sha512",

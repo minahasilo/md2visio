@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph.@internal;
 using System.Text.RegularExpressions;
 
@@ -20,14 +20,18 @@ namespace md2visio.mermaid.graph
             return Forward<GSttChar>();
         }
 
+        static Regex regKW =
+            new("^(graph|flowchart|subgraph|end|style|linkStyle|class|classDef|direction|click)$", RegexOptions.Compiled);
         public static bool IsKeyword(string word)
         {
-            return Regex.IsMatch(word, "^(graph|flowchart|subgraph|end|style|linkStyle|class|classDef|direction|click)$");
+            return regKW.IsMatch(word);
         }
 
+        static Regex regDir =
+            new("^(LR|RL|TD|TB|BT)$", RegexOptions.Compiled);
         public static bool IsDirection(string word)
         {
-            return Regex.IsMatch(word, "^(LR|RL|TD|TB|BT)$");
+            return regDir.IsMatch(word);
         }
     }
 }

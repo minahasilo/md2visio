@@ -1,6 +1,6 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph.@internal;
-using System.Text.RegularExpressions;
+using md2visio.struc.figure;
 
 namespace md2visio.mermaid.graph
 {
@@ -15,8 +15,9 @@ namespace md2visio.mermaid.graph
         }
 
         public static SynState Create(SynContext ctx)
-        {
-            if (!IsNoLabelLink(ctx)) return Empty;
+        {           
+            if (!IsNoLabelLink(ctx)) 
+                return EmptyState.Instance;
 
             SynState state = new GSttNoLabelLink();
             state.Ctx = ctx;

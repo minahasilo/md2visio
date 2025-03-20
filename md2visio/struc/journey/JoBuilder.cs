@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.journey;
 using md2visio.struc.figure;
 
@@ -7,7 +7,7 @@ namespace md2visio.struc.journey
     internal class JoBuilder : FigureBuilder
     {
         Journey journey = new Journey();
-        JoSection curSection = JoSection.Empty;
+        JoSection curSection = Empty.Get<JoSection>();
         public JoBuilder(SttIterator iter) : base(iter) { }
 
         public override void Build(string outputFile)
@@ -54,7 +54,7 @@ namespace md2visio.struc.journey
             if (curSection.IsEmpty()) throw new SynException("expected section", iter);
 
             JoSttTriple triple = (JoSttTriple)iter.Current;
-            CompoList compo = triple.CompoList;
+            CompoDict compo = triple.CompoList;
             JoTask task = new JoTask(compo.Get(1), compo.Get(2), compo.Get(3));
             curSection.AddTask(task);
         }

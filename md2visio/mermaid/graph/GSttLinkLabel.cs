@@ -1,4 +1,5 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
+using md2visio.struc.figure;
 using System.Text.RegularExpressions;
 
 namespace md2visio.mermaid.graph
@@ -15,7 +16,7 @@ namespace md2visio.mermaid.graph
 
         public static SynState Create(SynContext ctx)
         {
-            if (!IsLinkText(ctx)) return Empty;
+            if (!IsLinkText(ctx)) return EmptyState.Instance;
 
             Group textGroup = ctx.TestGroups["text"];
             string text = textGroup.Value.Trim();

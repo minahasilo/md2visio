@@ -1,16 +1,12 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.packet;
 using md2visio.struc.figure;
 
 namespace md2visio.struc.packet
 {
-    internal class PacBuilder : FigureBuilder
+    internal class PacBuilder(SttIterator iter) : FigureBuilder(iter)
     {
-        Packet packet = new Packet();
-
-        public PacBuilder(SttIterator iter) : base(iter)
-        {
-        }
+        readonly Packet packet = new();
 
         public override void Build(string outputFile)
         {
@@ -20,14 +16,14 @@ namespace md2visio.struc.packet
                 if (cur is SttMermaidStart) { }
                 if (cur is SttMermaidClose) { packet.ToVisio(outputFile); break; }
                 if (cur is PacSttTuple) { BuildBits((PacSttTuple) cur); }
-                if (cur is SttComment) { packet.InitDirectiveFromComment(cur.Fragment); }
-                if (cur is SttFrontMatter) { packet.InitFrontMatter(cur.Fragment); } 
+                if (cur is SttComment) { packet.Config.LoadDirectiveFromComment(cur.Fragment); }
+                if (cur is SttFrontMatter) { packet.Config.LoadFrontMatter(cur.Fragment); } 
             }
         }
 
         void BuildBits(PacSttTuple tuple)
         {
-            PacBlock bits = new PacBlock(tuple.GetPart("bits"), tuple.GetPart("name"));
+            PacBlock bits = new(tuple.GetPart("bits"), tuple.GetPart("name"));
             packet.AddInnerNode(bits);
         }
     }

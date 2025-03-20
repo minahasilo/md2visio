@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph;
 using md2visio.struc.figure;
 
@@ -9,7 +9,7 @@ namespace md2visio.struc.graph
         static List<GNode> EmptyList = new List<GNode>();
         Stack<Graph> stack = new Stack<Graph>();
         List<GNode> fromNodes = EmptyList, toNodes = EmptyList;
-        GEdge edge = GEdge.Empty;
+        GEdge edge = Empty.Get<GEdge>();
 
         public GBuilder(SttIterator iter) : base(iter)
         {
@@ -55,7 +55,7 @@ namespace md2visio.struc.graph
                 }
             }
 
-            edge = GEdge.Empty;
+            edge = Empty.Get<GEdge>();
             fromNodes = toNodes;
             toNodes = EmptyList;
         }
@@ -101,7 +101,7 @@ namespace md2visio.struc.graph
         GEdge BuildEdge()
         {
             SynState state = iter.Current;
-            edge = GEdge.Empty;
+            edge = Empty.Get<GEdge>();
             if (state is GSttLinkStart)
             {
                 edge = new GEdge();

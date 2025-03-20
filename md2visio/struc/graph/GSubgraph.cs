@@ -1,5 +1,4 @@
-﻿using md2visio.mermaid;
-using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.struc.figure;
 using Microsoft.Office.Interop.Visio;
 using System.Text;
@@ -27,7 +26,7 @@ namespace md2visio.struc.graph
             get { return label.ToString(); }
             set { label.Content = value; }
         }
-        public Container Container { get { return Parent ?? Empty; } set { Parent = value; } }
+        public Container Container { get { return Parent ?? Empty.Get<Container>(); } set { Parent = value; } }
 
         public GSubgraph(Graph parent, string id)
         {
@@ -44,7 +43,7 @@ namespace md2visio.struc.graph
 
         public List<GEdge> OutputEdges { get; set; } = new List<GEdge>();
 
-        public override void SetParam(CompoList valueList)
+        public override void SetParam(CompoDict valueList)
         {
             StringBuilder t = new StringBuilder();
             foreach (var item in valueList.Values())

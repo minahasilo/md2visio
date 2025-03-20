@@ -1,6 +1,6 @@
-﻿using md2visio.mermaid._cmn;
-using md2visio.vsdx;
+﻿using md2visio.mermaid.cmn;
 using System.Reflection;
+using md2visio.vsdx.@base;
 
 namespace md2visio.struc.figure
 {
@@ -34,7 +34,10 @@ namespace md2visio.struc.figure
                     string word = list[pos].Fragment;
                     if (SttFigureType.IsFigure(word)) BuildFigure(word);
                 }
-            }
+            }            
+        }
+        public void Quit()
+        {
             VBuilder.VisioApp.Quit();
         }
 

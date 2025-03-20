@@ -1,12 +1,9 @@
-﻿using md2visio.struc.figure;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace md2visio.struc.graph
 {
-    internal class GLabel : IEmpty
+    internal class GLabel 
     {
-        public static GLabel Empty = new GLabel();
-
         string content = string.Empty;
         string markdown = string.Empty;
 
@@ -47,11 +44,6 @@ namespace md2visio.struc.graph
         {
             if (markdown.Length == 0) return content;
             return markdown;
-        }
-
-        public bool IsEmpty()
-        {
-            return this == Empty;
         }
 
     }

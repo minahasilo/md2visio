@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 
 namespace md2visio.mermaid.journey
 {

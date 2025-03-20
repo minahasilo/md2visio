@@ -1,21 +1,14 @@
-﻿using md2visio.struc.figure;
-using md2visio.struc.pie;
+﻿using md2visio.struc.pie;
+using md2visio.vsdx.@base;
 
 namespace md2visio.vsdx
 {
-    internal class VBuilderPie : VBuilder
+    internal class VBuilderPie(Pie figure) : VFigureBuilder<Pie>(figure)
     {
-        VShapeDrawerPie drawer;
-
-        public VBuilderPie(Figure figure) : base(figure)
+        protected override void ExecuteBuild()
         {
-            drawer = new VShapeDrawerPie(VisioApp);
+            new VDrawerPie(figure, VisioApp).Draw();
         }
 
-        public override void Build(string outputFile)
-        {
-            drawer.Draw(figure.DownCast<Pie>());
-            SaveAndClose(outputFile);
-        }
     }
 }

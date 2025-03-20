@@ -1,5 +1,5 @@
-﻿using md2visio.mermaid._cmn;
-using System.Text.RegularExpressions;
+﻿using md2visio.mermaid.cmn;
+using md2visio.struc.figure;
 
 namespace md2visio.mermaid.graph
 {
@@ -15,7 +15,7 @@ namespace md2visio.mermaid.graph
 
         public static SynState Create(SynContext ctx)
         {
-            if (!IsLinkStart(ctx)) return Empty;
+            if (!IsLinkStart(ctx)) return EmptyState.Instance;
 
             SynState state = new GSttLinkStart();
             state.Ctx = ctx;

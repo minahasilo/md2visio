@@ -1,20 +1,14 @@
-﻿using md2visio.mermaid._cmn;
-using md2visio.struc.figure;
+﻿using md2visio.struc.figure;
 using md2visio.vsdx;
 
 namespace md2visio.struc.pie
 {
     internal class Pie : Figure
     {
-        string title = string.Empty;
-        
-        public string Title
-        {
-            get => title;
-            set => title = value.Trim();
-        }
-
         public bool ShowData { get; set; } = false;
+
+        public Pie() { 
+        }
 
         public double TotalNum()
         {

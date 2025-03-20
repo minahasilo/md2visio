@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.struc.figure;
 using md2visio.vsdx;
 
@@ -144,7 +144,7 @@ namespace md2visio.struc.graph
             return LinkedNode(nodes2draw, this, excludeNodes);
         }
 
-        public virtual void SetParam(CompoList list)
+        public virtual void SetParam(CompoDict list)
         {
             string frag = list.Entire;
             if (!string.IsNullOrEmpty(frag)) Direction = frag;

@@ -2,51 +2,57 @@
 using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 
-namespace md2visio.vsdx
+namespace md2visio.vsdx.@base
 {
-    internal class VBoundary: IEmpty
+    internal class VBoundary
     {
-        public static readonly VBoundary Empty = new VBoundary();
-
         protected double pinx, piny, width, height;
         public double PinX { get { return pinx; } }
         public double PinY { get { return piny; } }
-        public double Width { get { return width; } }  
+        public double Width { get { return width; } }
         public double Height { get { return height; } }
-        public double Left { 
-            get { return pinx - width / 2; } 
-            set {
+        public double Left
+        {
+            get { return pinx - width / 2; }
+            set
+            {
                 double r = Right;
-                if (value > r) return;                
+                if (value > r) return;
                 pinx = (value + r) / 2;
                 width = r - value;
-            } 
+            }
         }
 
-        public double Right { 
-            get { return pinx + width / 2; } 
-            set {
+        public double Right
+        {
+            get { return pinx + width / 2; }
+            set
+            {
                 double L = Left;
-                if(value < L) return;
+                if (value < L) return;
                 pinx = (L + value) / 2;
                 width = value - L;
             }
         }
 
-        public double Top { 
+        public double Top
+        {
             get { return piny + height / 2; }
-            set {
+            set
+            {
                 double b = Bottom;
                 if (value < b) return;
                 piny = (b + value) / 2;
                 height = value - b;
             }
         }
-        public double Bottom { 
+        public double Bottom
+        {
             get { return piny - height / 2; }
-            set {
+            set
+            {
                 double t = Top;
-                if(value > t) return;
+                if (value > t) return;
                 piny = (value + t) / 2;
                 height = t - value;
             }
@@ -97,7 +103,7 @@ namespace md2visio.vsdx
         {
             VBoundary clone = new VBoundary();
             clone.pinx = pinx;
-            clone.piny = piny;  
+            clone.piny = piny;
             clone.width = width;
             clone.height = height;
             return clone;
@@ -105,15 +111,15 @@ namespace md2visio.vsdx
 
         public static VBoundary Create(LinkedList<GNode> nodes)
         {
-            VBoundary boundary = Empty;
+            VBoundary boundary = Empty.Get<VBoundary>();
             foreach (var node in nodes)
             {
                 Shape? shape = node.VisioShape;
                 if (shape == null) continue;
 
                 VBoundary bnd2cmp = new VShapeBoundary(shape);
-                if (boundary == Empty) { boundary = bnd2cmp; continue; }
-                
+                if (boundary.IsEmpty()) { boundary = bnd2cmp; continue; }
+
                 ExpandBoundary(boundary, bnd2cmp);
             }
 
@@ -132,7 +138,7 @@ namespace md2visio.vsdx
 
         public static void ExpandBoundary(VBoundary bnd2expand, VBoundary bndCompare)
         {
-            if(bndCompare == Empty) return;
+            if (bndCompare.IsEmpty()) return;
 
             if (bndCompare.Left < bnd2expand.Left) bnd2expand.Left = bndCompare.Left;
             if (bndCompare.Right > bnd2expand.Right) bnd2expand.Right = bndCompare.Right;
@@ -140,9 +146,5 @@ namespace md2visio.vsdx
             if (bndCompare.Bottom < bnd2expand.Bottom) bnd2expand.Bottom = bndCompare.Bottom;
         }
 
-        public bool IsEmpty()
-        {
-            return this == Empty;
-        }
     }
 }

@@ -1,12 +1,6 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph.@internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using md2visio.struc.figure;
 
 namespace md2visio.mermaid.graph
 {
@@ -21,7 +15,7 @@ namespace md2visio.mermaid.graph
 
         public static SynState Create(SynContext ctx)
         {
-            if (!IsLinkEnd(ctx)) return Empty;
+            if (!IsLinkEnd(ctx)) return EmptyState.Instance;
 
             SynState state = new GSttLinkEnd();
             state.Ctx = ctx;

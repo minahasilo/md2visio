@@ -1,15 +1,12 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.pie;
 using md2visio.struc.figure;
 
 namespace md2visio.struc.pie
 {
-    internal class PieBuilder : FigureBuilder
+    internal class PieBuilder(SttIterator iter) : FigureBuilder(iter)
     {
-        Pie pie = new Pie();
-        public PieBuilder(SttIterator iter) : base(iter)
-        {
-        }
+        readonly Pie pie = new();
 
         public override void Build(string outputFile)
         {
@@ -24,8 +21,8 @@ namespace md2visio.struc.pie
                 }
                 if (cur is PieSttKeyword) { BuildKeyword(); }
                 if (cur is PieSttTuple) { BuildDataItem(); }
-                if (cur is SttComment) { pie.InitDirectiveFromComment(cur.Fragment); }
-                if (cur is SttFrontMatter) { }
+                if (cur is SttComment) { pie.Config.LoadDirectiveFromComment(cur.Fragment); }
+                if (cur is SttFrontMatter) { pie.Config.LoadFrontMatter(cur.Fragment); }
             }
         }
 
@@ -39,7 +36,7 @@ namespace md2visio.struc.pie
                 {
                     var dict = ((PieSttKeywordParam) iter.Next()).ParsePieParam();
                     pie.ShowData = dict.ContainsKey("showData");
-                    if(dict.ContainsKey("title")) pie.Title = dict["title"];
+                    if(dict.TryGetValue("title", out string? value)) pie.Title = value;
                 }
             }
             else if (kw == "title")
@@ -54,9 +51,8 @@ namespace md2visio.struc.pie
             PieSttTuple tuple = (PieSttTuple) iter.Current;
             PieDataItem dataItem = pie.RetrieveNode<PieDataItem>(tuple.CompoList.Get(1));
 
-            double data;
-            if (!double.TryParse(tuple.CompoList.Get(2), out data) || 
-                data <= 0) 
+            if (!double.TryParse(tuple.CompoList.Get(2), out double data) ||
+                data <= 0)
                 throw new SynException("data must be a positive number", iter);
             dataItem.Data = data;
 

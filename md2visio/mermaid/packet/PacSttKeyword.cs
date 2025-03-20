@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using System.Text.RegularExpressions;
 
 namespace md2visio.mermaid.packet

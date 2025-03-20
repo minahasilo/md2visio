@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph.@internal;
 using System.Text.RegularExpressions;
 
@@ -45,16 +45,18 @@ namespace md2visio.mermaid.graph
             return false;
         }
 
+        static Regex regShapeStart =
+            new(@"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$", RegexOptions.Compiled);
         bool IsShapeStart(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$");
+            return regShapeStart.IsMatch(fragment);
         }
 
+        static Regex regShapeClose =
+            new(@"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$", RegexOptions.Compiled);
         bool IsShapeClose(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$");
+            return regShapeClose.IsMatch(fragment);
         }
-
-
     }
 }

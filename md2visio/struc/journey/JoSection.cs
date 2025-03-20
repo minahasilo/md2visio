@@ -4,14 +4,13 @@ using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.struc.journey
 {
-    internal class JoSection : INode, IEmpty
+    internal class JoSection : INode
     {
-        public static readonly JoSection Empty = new JoSection();
         string Title { get; set; } = string.Empty;
         public string ID { get; set; } = string.Empty;
         public string Label { get => ID; set => ID = value; }
         public Shape? VisioShape { get; set; }
-        public Container Container { get; set; } = Figure.Empty;
+        public Container Container { get; set; } = Empty.Get<Container>();
         public List<JoTask> Tasks { get => joTasks; }
 
         public List<GEdge> InputEdges => throw new NotImplementedException();
@@ -40,9 +39,5 @@ namespace md2visio.struc.journey
             return set;
         }
 
-        public bool IsEmpty()
-        {
-            return this == Empty;
-        }
     }
 }

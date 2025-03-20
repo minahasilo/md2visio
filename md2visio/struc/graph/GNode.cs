@@ -6,11 +6,10 @@ using System.Text.RegularExpressions;
 
 namespace md2visio.struc.graph
 {
-    internal class GNode : INode, IEmpty
+    internal class GNode : INode
     {
         public static double SPACE = 0.3;
         public static double PADDING = 0.15;
-        public static GNode Empty = new GNode();
 
         protected string id = string.Empty;
 
@@ -20,7 +19,7 @@ namespace md2visio.struc.graph
         List<GNode> inputNodes = new List<GNode>();
         GNodeShape nodeShape = new GNodeShape();
 
-        public GNode() : this(Figure.Empty, string.Empty) { }
+        public GNode() : this(Empty.Get<EmptyFigure>(), string.Empty) { }
 
         public GNode(Container container, string id)
         {
@@ -75,14 +74,14 @@ namespace md2visio.struc.graph
 
             if (shape != null && fixedShape != null)
             {
-                double w = VShapeDrawer.ShapeSheetIU(fixedShape, "Width");
-                double h = VShapeDrawer.ShapeSheetIU(fixedShape, "Height");
-                double x = VShapeDrawer.ShapeSheetIU(fixedShape, "PinX");
-                double y = VShapeDrawer.ShapeSheetIU(fixedShape, "PinY");
+                double w = VDrawerG.ShapeSheetIU(fixedShape, "Width");
+                double h = VDrawerG.ShapeSheetIU(fixedShape, "Height");
+                double x = VDrawerG.ShapeSheetIU(fixedShape, "PinX");
+                double y = VDrawerG.ShapeSheetIU(fixedShape, "PinY");
                 int reverse = rpos == RelativePos.FRONT ? -1 : 1;
 
-                double sw = VShapeDrawer.ShapeSheetIU(shape, "Width");
-                double sh = VShapeDrawer.ShapeSheetIU(shape, "Height");
+                double sw = VDrawerG.ShapeSheetIU(shape, "Width");
+                double sh = VDrawerG.ShapeSheetIU(shape, "Height");
                 GGrowthDirection grow = node.Container.GrowDirect;
                 if (grow.H == 0)
                 {
@@ -127,22 +126,24 @@ namespace md2visio.struc.graph
             return inputNodes;
         }
 
-        public bool IsEmpty() { return this == Empty; }
-
         static public bool IsShapeFragment(string fragment)
         {
             return IsShapeStartFragment(fragment) ||
                 IsShapeCloseFragment(fragment);
         }
 
+        static Regex regShapeStart = 
+            new(@"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$", RegexOptions.Compiled);
         static public bool IsShapeStartFragment(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$");
+            return regShapeStart.IsMatch(fragment);
         }
 
+        static Regex regShapeClose = 
+            new(@"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$", RegexOptions.Compiled);
         static public bool IsShapeCloseFragment(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$");
+            return regShapeClose.IsMatch(fragment);
         }
 
         static public string ShapeCloseFragmentPattern(string startFragment)

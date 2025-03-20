@@ -1,14 +1,11 @@
-﻿using md2visio.mermaid._cmn;
-using md2visio.struc.figure;
+﻿using md2visio.mermaid.cmn;
 using System.Text.RegularExpressions;
 
 namespace md2visio.struc.graph
 {
-    internal class GNodeShape : IEmpty
+    internal class GNodeShape 
     {
-        public static readonly GNodeShape Empty = new GNodeShape();
-
-        MmdJsonObj data = new MmdJsonObj();
+        readonly MmdJsonObj data = new MmdJsonObj();
         GLabel label = new GLabel(string.Empty);
 
         public GNodeShape()
@@ -17,13 +14,17 @@ namespace md2visio.struc.graph
             data["label"] = label.Content;
         }
 
-        public string Shape { get => $"{data["shape"]}"; set => data["shape"] = value; }
+        public string Shape { 
+            get => $"{data["shape"]}"; 
+            set => data["shape"] = value; 
+        }
         public string Label
         {
-            get { label.Content = $"{data["label"]}"; return label.Content; }
+            get => label.Content = $"{data["label"]}";
             set
             {
-                if (value?.Length > 0) data["label"] = value;
+                if (value?.Length > 0) 
+                    data["label"] = value;
             }
         }
 
@@ -133,14 +134,18 @@ namespace md2visio.struc.graph
                 IsShapeCloseFragment(fragment);
         }
 
+        static Regex regShapeStart =
+            new(@"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$", RegexOptions.Compiled);
         static public bool IsShapeStartFragment(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(>|\[{1,2}|\{{1,2}|\({1,3}|\[\(|\[\\|\[/|\(\[)$");
+            return regShapeStart.IsMatch(fragment);
         }
 
+        static Regex regShapeClose =
+            new(@"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$", RegexOptions.Compiled);
         static public bool IsShapeCloseFragment(string fragment)
         {
-            return Regex.IsMatch(fragment, @"^(\]{1,2}|\}{1,2}|\){1,3}|\)\]|\\\]|/\]|\]\))$");
+            return regShapeClose.IsMatch(fragment);
         }
 
         static public string ShapeCloseFragmentPattern(string startFragment)
@@ -163,9 +168,5 @@ namespace md2visio.struc.graph
             return "]";
         }
 
-        public bool IsEmpty()
-        {
-            return this == Empty;
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using System.Text.RegularExpressions;
 
 namespace md2visio.mermaid.graph.@internal
@@ -33,7 +33,8 @@ namespace md2visio.mermaid.graph.@internal
             // right
             if (SttFrontMatter.IsConfig(Ctx)) return Forward<SttFrontMatter>();
             if (GSttLinkStart.IsLinkStart(Ctx)) return Forward<GSttLinkStart>();
-            else if (GSttNoLabelLink.IsNoLabelLink(Ctx)) return Forward<GSttNoLabelLink>();
+            else if (GSttNoLabelLink.IsNoLabelLink(Ctx)) 
+                return Forward<GSttNoLabelLink>();
 
             return Take().Forward<GSttChar>();
         }

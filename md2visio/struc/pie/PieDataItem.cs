@@ -9,7 +9,7 @@ namespace md2visio.struc.pie
         public string ID { get; set; } = string.Empty;
         public string Label { get => ID; set => ID = value; }
         public Shape? VisioShape { get; set; }
-        public Container Container { get; set; } = Figure.Empty;
+        public Container Container { get; set; } = Empty.Get<Container>();
         public double Data {  get; set; }
 
         public List<GEdge> InputEdges => throw new NotImplementedException();

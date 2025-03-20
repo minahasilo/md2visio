@@ -1,7 +1,6 @@
 ﻿using md2visio.struc.figure;
 using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
-using System;
 
 namespace md2visio.struc.packet
 {
@@ -10,7 +9,7 @@ namespace md2visio.struc.packet
         public string ID { get; set; } = string.Empty;
         public string Label { get; set; } = string.Empty;
         public Shape? VisioShape { get; set; }
-        public Container Container { get; set; } = Figure.Empty;
+        public Container Container { get; set; } = Empty.Get<Container>();
         public int BitStart { get; set; } = 0;
         public int BitEnd { get; set; } = 0;
         public int BitNum { get => BitEnd - BitStart + 1; } 

@@ -1,10 +1,4 @@
-﻿using md2visio.mermaid._cmn;
-using md2visio.mermaid.graph;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using md2visio.mermaid.cmn;
 
 namespace md2visio.mermaid.graph.@internal
 {

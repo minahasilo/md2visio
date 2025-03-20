@@ -1,14 +1,11 @@
 ﻿using md2visio.struc.figure;
-using Microsoft.Office.Interop.Visio;
 using System.Text.RegularExpressions;
 
 namespace md2visio.struc.graph
 {
-    internal class GEdge : Edge, IEmpty
+    internal class GEdge : Edge
     {
-        public static GEdge Empty = new GEdge();
-
-        GNode from = GNode.Empty, to = GNode.Empty;
+        GNode from = Empty.Get<GNode>(), to = Empty.Get<GNode>();
         string lineType = "-"; // solid/bold/dashed (-/=/.)
         string startTag = "-"; // x/o/-/<
         string endTag = "-"; // x/o/-/>
@@ -62,8 +59,6 @@ namespace md2visio.struc.graph
             this.from = from;
             ConnectTo(to);
         }
-
-        public bool IsEmpty() { return this == Empty; }
 
         public GEdge Clone()
         {

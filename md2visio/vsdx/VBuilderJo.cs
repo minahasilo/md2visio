@@ -1,23 +1,13 @@
-﻿using md2visio.struc.figure;
-using md2visio.struc.journey;
+﻿using md2visio.struc.journey;
+using md2visio.vsdx.@base;
 
 namespace md2visio.vsdx
 {
-    internal class VBuilderJo : VBuilder
+    internal class VBuilderJo(Journey figure) : VFigureBuilder<Journey>(figure)
     {
-        VShapeDrawerJo shapeDrawer;
-
-        public VBuilderJo(Figure figure) : base(figure)
+        protected override void ExecuteBuild()
         {
-            shapeDrawer = new VShapeDrawerJo(VisioApp);
-        }
-
-        public override void Build(string outputFile)
-        {
-            Journey jo = figure.DownCast<Journey>();
-            shapeDrawer.DrawJounery(jo);
-            
-            SaveAndClose(outputFile);
+            new VDrawerJo(figure, VisioApp).Draw();
         }
     }
 }

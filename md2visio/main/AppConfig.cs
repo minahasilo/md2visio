@@ -9,6 +9,7 @@
         public bool Visible { get; set; } = false; 
         public bool Quiet { get; set; } = false;
         public bool Debug { get; set; } = false;
+        public bool Test {  get; set; } = false;
 
         AppConfig() { }
 
@@ -29,6 +30,8 @@
                     ShowHelp();
                 else if (arg == "/D")
                     Debug = true;
+                else if (arg == "/T")
+                    Test = true;
             }
 
             return InputFile != string.Empty && 

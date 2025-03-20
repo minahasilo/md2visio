@@ -5,13 +5,6 @@ namespace md2visio.struc.journey
 {
     internal class Journey : Figure
     {
-        string title = string.Empty;
-
-        public string Title
-        {
-            get => title;
-            set => title = value.Trim();
-        }
         public Journey() { }
 
         public HashSet<string> JoinerSet()

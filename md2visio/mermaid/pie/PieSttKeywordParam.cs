@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using Microsoft.Office.Interop.Visio;
 using System.Text;
 

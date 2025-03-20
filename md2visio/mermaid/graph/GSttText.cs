@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid._cmn;
+﻿using md2visio.mermaid.cmn;
 using md2visio.mermaid.graph.@internal;
 using System.Text.RegularExpressions;
 
@@ -6,6 +6,8 @@ namespace md2visio.mermaid.graph
 {
     internal class GSttText : SynState
     {
+        Regex regNodeString = new(@"^[\^=\|><]|~{1,2}$", RegexOptions.Compiled);
+
         public override SynState NextState()
         {
             if (!Ctx.FindContainerFrag("graph|flowchart|subgraph").Success)
@@ -15,7 +17,7 @@ namespace md2visio.mermaid.graph
             ClearBuffer().SlideSpaces();
             if (string.IsNullOrWhiteSpace(text)) return Forward<GSttChar>();
 
-            if (Regex.IsMatch(text, @"^[\^=\|><]|~{1,2}$"))
+            if (regNodeString.IsMatch(text))
                 throw new SynException("unexpected node string", Ctx);
 
             return Save(text).Forward<GSttChar>();

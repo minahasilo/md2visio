@@ -1,4 +1,9 @@
 ```mermaid
+---
+config:
+  themeVariables: 
+    pieOuterStrokeWidth: "1px"
+---
 %%{init: {"pie": {"textPosition": 0.8}, "themeVariables": {"pieOuterStrokeWidth": "5px"}} }%%
 pie showData title Pets adopted by volunteers
 	%% pie: test

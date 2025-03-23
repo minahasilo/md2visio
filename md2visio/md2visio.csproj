@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="stdole" Version="17.13.40008" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
     <PackageReference Include="WonderCircuits.Microsoft.Office.Interop.Visio" Version="15.0.0" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
@@ -36,7 +37,6 @@
     <Folder Include="mermaid\san\" />
     <Folder Include="mermaid\mind\" />
     <Folder Include="mermaid\block\" />
-    <Folder Include="mermaid\xy\" />
     <Folder Include="mermaid\kanban\" />
     <Folder Include="mermaid\arc\" />
     <Folder Include="struc\qua\" />
@@ -46,7 +46,6 @@
     <Folder Include="struc\sta2\" />
     <Folder Include="struc\sta\" />
     <Folder Include="struc\time\" />
-    <Folder Include="struc\xy\" />
     <Folder Include="struc\zen\" />
   </ItemGroup>
 

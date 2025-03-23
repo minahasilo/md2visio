@@ -2,7 +2,7 @@
   "profiles": {
     "md2visio": {
       "commandName": "Project",
-      "commandLineArgs": "/D /V /I \"C:\\Users\\Megre\\Documents\\GitHub\\md2visio\\md2visio\\test\\packet.md\" /O \"C:\\Users\\Megre\\Desktop\""
+      "commandLineArgs": "/D /V /Y /I \"C:\\Users\\Megre\\Documents\\GitHub\\md2visio\\md2visio\\test\\graph.md\" /O \"C:\\Users\\Megre\\Desktop\""
     }
   }
 }

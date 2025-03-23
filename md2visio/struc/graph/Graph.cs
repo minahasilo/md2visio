@@ -8,6 +8,7 @@ namespace md2visio.struc.graph
     {
         Dictionary<string, GSubgraph> subgraphDict = new Dictionary<string, GSubgraph>();
         protected LinkedList<GNode> alignedInnerNodes = new LinkedList<GNode>();
+        protected LinkedList<GNode> alignedGroupedNodes = new LinkedList<GNode>();
 
         public List<GSubgraph> Subgraphs { get { return subgraphDict.Values.ToList(); } }
 
@@ -39,6 +40,19 @@ namespace md2visio.struc.graph
                 if (!sorted) alignedInnerNodes.AddLast(node);
             }
             return alignedInnerNodes;
+        }
+
+        public LinkedList<GNode> AlignGroupedNodes()
+        {
+            if (groupedNodes.Count == 0) return alignedGroupedNodes;
+            if (alignedGroupedNodes.Count > 0) return alignedGroupedNodes;
+
+            foreach(GNode node in AlignInnerNodes())
+            {
+                if(groupedNodes.ContainsKey(node.ID)) 
+                    alignedGroupedNodes.AddLast(node);
+            }
+            return alignedGroupedNodes;
         }
 
         public static GNode? NodeConnectionStart(LinkedList<GNode> list, GNode node)
@@ -89,14 +103,14 @@ namespace md2visio.struc.graph
             return (null, RelativePos.TAIL);
         }
 
-        (GNode? linkedNode, RelativePos nodePos) LinkedNode(LinkedList<GNode> drawList, Graph graph, LinkedList<GNode> excludeNodes)
+        (GNode? linkedNode, RelativePos nodePos) LinkedNode(LinkedList<GNode> drawList, Graph graph, LinkedList<GNode> drawnNodes)
         {
             foreach (GNode node2draw in drawList)
             {
                 foreach (GSubgraph subGraph in graph.Subgraphs)
                 {
                     LinkedList<GNode> subNodeList = subGraph.AlignInnerNodes();
-                    (GNode? linkedNode, RelativePos nodePos) = NodeLinkedToSubgraph(node2draw, subNodeList, excludeNodes);
+                    (GNode? linkedNode, RelativePos nodePos) = NodeLinkedToSubgraph(node2draw, subNodeList, drawnNodes);
                     if (linkedNode == null) continue;
 
                     return (node2draw, nodePos);
@@ -105,7 +119,7 @@ namespace md2visio.struc.graph
 
             foreach (GSubgraph subGraph in graph.Subgraphs)
             {
-                (GNode? linkedNode, RelativePos nodePos) = LinkedNode(drawList, subGraph, excludeNodes);
+                (GNode? linkedNode, RelativePos nodePos) = LinkedNode(drawList, subGraph, drawnNodes);
                 if (linkedNode == null) continue;
 
                 return (linkedNode, nodePos);
@@ -114,7 +128,7 @@ namespace md2visio.struc.graph
 
             foreach (GNode node2draw in drawList)
             {
-                (GNode? linkedNode, RelativePos nodePos) = NodeLinkedToSubgraph(node2draw, drawList, excludeNodes);
+                (GNode? linkedNode, RelativePos nodePos) = NodeLinkedToSubgraph(node2draw, drawList, drawnNodes);
                 if (linkedNode == null) continue;
 
                 return (node2draw, nodePos);
@@ -138,10 +152,10 @@ namespace md2visio.struc.graph
             return (null, RelativePos.TAIL);
         }
 
-        public (GNode? linkedNode, RelativePos nodePos) NodeLinkedToSubgraph(LinkedList<GNode> excludeNodes)
+        public (GNode? linkedNode, RelativePos nodePos) NodesHavingInput(LinkedList<GNode> drawnNodes)
         {
-            LinkedList<GNode> nodes2draw = AlignInnerNodes();
-            return LinkedNode(nodes2draw, this, excludeNodes);
+            LinkedList<GNode> nodes2draw = AlignGroupedNodes(); 
+            return LinkedNode(nodes2draw, this, drawnNodes);
         }
 
         public virtual void SetParam(CompoDict list)

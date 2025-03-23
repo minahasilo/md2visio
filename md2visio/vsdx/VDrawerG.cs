@@ -3,30 +3,88 @@ using md2visio.struc.figure;
 using md2visio.struc.graph;
 using md2visio.vsdx.@base;
 using Microsoft.Office.Interop.Visio;
-using System.Drawing;
 
 namespace md2visio.vsdx
 {
     internal enum RelativePos
     {
-        FRONT, TAIL, BESIDE
+        FRONT, TAIL
     }
 
-    internal class VDrawerG(Graph graph, Application visioApp) : 
-        VFigureDrawer<Graph>(graph, visioApp)
+    internal class VDrawerG : VFigureDrawer<Graph>        
     {
-        LinkedList<GNode> alignList = new LinkedList<GNode>();
+        LinkedList<GNode> drawnList = new LinkedList<GNode>();
+        public VDrawerG(Graph figure, Application visioApp): base(figure, visioApp)
+        {
+        }
 
         public override void Draw()
         {
             DrawNodes(figure);
             DrawEdges(figure);
+        }        
+
+        void DrawNodes(Graph graph)
+        {
+            foreach (GSubgraph subGraph in graph.Subgraphs)
+            {
+                DrawNodes(subGraph);
+            }
+
+            // align grouped nodes
+            LinkedList<GNode> nodes2Draw = new LinkedList<GNode>();
+            (GNode? linkedNode, RelativePos rpos) = graph.NodesHavingInput(nodes2Draw);
+            while (linkedNode != null)
+            {
+                if (linkedNode.VisioShape == null) break;
+                (linkedNode, rpos) = graph.NodesHavingInput(nodes2Draw);
+            }
+
+            foreach (GNode node in graph.AlignGroupedNodes()) 
+            {
+                if(!nodes2Draw.Contains(node)) nodes2Draw.AddLast(node);
+            }
+
+            // draw nodes
+            if (nodes2Draw.Count == 0) return;
+
+            DrawLinkedNodes(nodes2Draw, graph.GrowthDirect);
+            Relocate(nodes2Draw.ToList(), graph.GrowthDirect);
+
+            // border
+            if (nodes2Draw.First().Container is GSubgraph)
+            {
+                GSubgraph subgraph = nodes2Draw.First().Container.DownCast<GSubgraph>();
+                DrawSubgraphBorder(subgraph);
+                Relocate(subgraph);
+            }        
         }
 
-        void DrawEdges(Graph figure)
+        void DrawLinkedNodes(LinkedList<GNode> nodes, GrowthDirection direct)
+        {
+            if (nodes.Count == 0) return;
+
+            VBoundary alignBound = Empty.Get<VBoundary>();
+            foreach (GNode node in nodes)
+            {
+                if (node is GBorderNode) continue;
+
+                Shape shape = CreateShape(node);
+
+                if (alignBound.IsEmpty()) alignBound = new VShapeBoundary(shape);
+                else
+                {
+                    alignBound.Grow(shape, direct, GNode.SPACE);
+                    alignBound = new VShapeBoundary(shape);
+                }
+                drawnList.AddLast(node);
+            }
+        }
+
+        void DrawEdges(Graph graph)
         {
             List<GEdge> drawnEdges = new List<GEdge>();
-            foreach (INode node in figure.NodeDict.Values)
+            foreach (INode node in graph.NodeDict.Values)
             {
                 if (node.VisioShape == null) continue;
                 foreach (GEdge edge in node.OutputEdges)
@@ -41,77 +99,83 @@ namespace md2visio.vsdx
             }
         }
 
-        void DrawNodes(Graph figure)
+        GNode DrawSubgraphBorder(GSubgraph subGraph)
         {
-            foreach (GSubgraph subGraph in figure.Subgraphs)
-            {
-                DrawNodes(subGraph);
-                DrawSubgraphBorder(subGraph);
-            }
+            GNode borderNode = DropSubgraphBorder(subGraph);
+            drawnList.AddLast(borderNode);
 
-            LinkedList<GNode> drawnNodes = new LinkedList<GNode>();
-            (GNode? linkedNode, RelativePos rpos) = figure.NodeLinkedToSubgraph(drawnNodes);
-            while (linkedNode != null)
-            {
-                DrawNode(linkedNode, rpos);
-                (linkedNode, rpos) = figure.NodeLinkedToSubgraph(drawnNodes);
-            }
-
-            foreach (GNode node in figure.AlignInnerNodes())
-            {
-                DrawNode(node, RelativePos.TAIL);
-            }
-
+            return borderNode;
         }
 
-        void DrawSubgraphBorder(GSubgraph subGraph)
+        VBoundary Relocate(GSubgraph subgraph)
         {
-            GNode borderNode = CreateSubgraphBorderNode(subGraph);
-            alignList.AddLast(borderNode);
-            alignList.AddFirst(borderNode);
+            return Relocate(subgraph.AllGroupedNodes, subgraph.Container.GrowthDirect);
         }
 
-        void DrawNode(GNode node, RelativePos rpos)
+        VBoundary Relocate(List<GNode> nodes, GrowthDirection direct)
         {
-            if (alignList.Contains(node)) return;
+            VBoundary nodesBound = NodesBoundary(nodes);
+            VBoundary relativeBound = NodesBoundary(drawnList.Except(nodes).ToList());
+            if (nodes.Count == 0 || relativeBound.Height == 0) return nodesBound;
 
-            Shape vshape = CreateShape(node);
-            PointF pos = NextDrawPos(node, rpos);
-            MoveTo(vshape, pos);
-
-            if (rpos == RelativePos.TAIL) alignList.AddLast(node);
-            else alignList.AddFirst(node);
-        }
-
-        PointF NextDrawPos(GNode node, RelativePos rpos)
-        {
-            PointF pos = PointF.Empty;
-            if (alignList.Count == 0) return pos;
-
-            Shape? shape = node.VisioShape;
-            if (shape == null) return pos;
-
-            VBoundary boundary = VBoundary.Create(alignList);
-            double w = boundary.Width, h = boundary.Height,
-                x = boundary.PinX, y = boundary.PinY;
-            int reverse = (rpos == RelativePos.FRONT ? -1 : 1);
+            VBoundary newBound = new(true);
+            bool drawAtTail = IsDrawAtTail(nodes, direct);
+            if(direct.H != 0)
             {
-                double sw = ShapeSheetIU(shape, "Width");
-                double sh = ShapeSheetIU(shape, "Height");
-                GGrowthDirection grow = node.Container.GrowDirect;
-                if (grow.H == 0)
+                double moveH = 0, moveV = relativeBound.PinY-nodesBound.PinY;
+                if (drawAtTail) moveH = relativeBound.Right + GNode.SPACE - nodesBound.Left;
+                else moveH = relativeBound.Left - GNode.SPACE - nodesBound.Right;
+
+                foreach (GNode node in nodes) 
                 {
-                    pos.X = (float)x; // 水平居中对齐
-                    pos.Y = (float)(y + grow.V * reverse * (h / 2 + sh / 2 + GNode.SPACE));
-                }
-                else if (grow.V == 0)
+                    if (node.VisioShape == null) continue;
+                    MoveTo(node.VisioShape, PinX(node.VisioShape)+moveH, PinY(node.VisioShape)+moveV);  
+                    newBound.Expand(node.VisioShape);
+                }                
+            }
+            if(direct.V != 0)
+            {
+                double moveV = 0, moveH = relativeBound.PinX - nodesBound.PinX;
+                if (drawAtTail) moveV = relativeBound.Top + GNode.SPACE - nodesBound.Bottom;
+                else moveV = relativeBound.Bottom - GNode.SPACE - nodesBound.Top;
+
+                foreach (GNode node in nodes)
                 {
-                    pos.Y = (float)y; // 垂直居中对齐
-                    pos.X = (float)(x + grow.H * reverse * (w / 2 + sw / 2 + GNode.SPACE));
+                    if (node.VisioShape == null) continue;
+                    MoveTo(node.VisioShape, PinX(node.VisioShape)+moveH, PinY(node.VisioShape)+moveV);
+                    newBound.Expand(node.VisioShape);
                 }
             }
 
-            return pos;
+            return newBound;
+        }
+
+        bool IsDrawAtTail(List<GNode> nodes, GrowthDirection direct)
+        {
+            int nOut = 0, nIn = 0;
+            foreach (GNode from in nodes)
+            {
+                foreach (GNode to in drawnList)
+                {
+                    if(from.OutputNodes().Contains(to)) nOut++;
+                    if(from.InputNodes().Contains(to)) nIn++;
+                }
+            }
+
+            if (nOut == nIn) return direct.Positive;
+            else return nIn > nOut;
+        }
+
+        VBoundary NodesBoundary(List<GNode> nodes)
+        {
+            VBoundary boundary = new(true);
+            foreach (var node in nodes)
+            {
+                if (node.VisioShape != null)
+                    boundary.Expand(node.VisioShape);
+            }
+
+            return boundary;
         }
 
         public static double ShapeSheetIU(GNode node, string propName)
@@ -120,18 +184,17 @@ namespace md2visio.vsdx
             return ShapeSheetIU(node.VisioShape, propName);
         }
 
-        public GNode CreateSubgraphBorderNode(GSubgraph gSubgraph)
+        public GNode DropSubgraphBorder(GSubgraph gSubgraph)
         {
             if (gSubgraph.Parent == null) throw new SynException("expected parent of subgraph");
 
-            GNode node = new GNode(gSubgraph.Parent, gSubgraph.ID);
-
+            GNode node = gSubgraph.BorderNode; // new GNode(gSubgraph.Parent, gSubgraph.ID);
             VBoundary bnd = SubgraphBoundary(gSubgraph);
             Shape shape = CreateShape(node);
-            shape.CellsU["PinX"].FormulaU = bnd.PinX.ToString();
-            shape.CellsU["PinY"].FormulaU = bnd.PinY.ToString();
             shape.CellsU["Width"].FormulaU = (bnd.Width + GNode.SPACE * 2).ToString();
             shape.CellsU["Height"].FormulaU = (bnd.Height + GNode.SPACE * 2).ToString();
+            shape.CellsU["PinX"].FormulaU = bnd.PinX.ToString();
+            shape.CellsU["PinY"].FormulaU = bnd.PinY.ToString();
             shape.CellsU["FillPattern"].FormulaU = "0";
             shape.CellsU["VerticalAlign"].FormulaU = "0";
             shape.Text = gSubgraph.Label;
@@ -142,8 +205,14 @@ namespace md2visio.vsdx
 
         VBoundary SubgraphBoundary(GSubgraph gSubgraph)
         {
-            VBoundary boundary = VBoundary.Create(gSubgraph.AlignInnerNodes());
-            if (gSubgraph.VisioShape != null) boundary.Expand(new VShapeBoundary(gSubgraph.VisioShape));
+            VBoundary boundary = new VBoundary(true);
+            foreach (INode node in gSubgraph.AlignGroupedNodes()) 
+            {
+                if (node.Container == gSubgraph && node.VisioShape != null) 
+                    boundary.Expand(node.VisioShape);
+            }
+            if (gSubgraph.VisioShape != null) 
+                boundary.Expand(gSubgraph.VisioShape);
 
             foreach (GSubgraph sub in gSubgraph.Subgraphs)
             {

@@ -31,21 +31,14 @@ namespace md2visio.struc.graph
         public GNodeShape NodeShape
         {
             get => nodeShape;
-            set
-            {
-                nodeShape = value;
-            }
+            set => nodeShape = value;
         }
         public List<GEdge> OutputEdges { get { return outputEdges; } }
         public List<GEdge> InputEdges { get { return inputEdges; } }
         public string ID
         {
             get { return id; }
-            set
-            {
-                id = value;
-                if (Label.Length == 0) Label = id;
-            }
+            set { id = value; if (Label.Length == 0) Label = id; }
         }
 
         public string Label
@@ -82,7 +75,7 @@ namespace md2visio.struc.graph
 
                 double sw = VDrawerG.ShapeSheetIU(shape, "Width");
                 double sh = VDrawerG.ShapeSheetIU(shape, "Height");
-                GGrowthDirection grow = node.Container.GrowDirect;
+                GrowthDirection grow = node.Container.GrowthDirect;
                 if (grow.H == 0)
                 {
                     pos.X = (float)x; // 水平居中对齐

@@ -10,8 +10,8 @@ namespace md2visio.struc.graph
         string startTag = "-"; // x/o/-/<
         string endTag = "-"; // x/o/-/>
         public string Text { get; set; } = string.Empty;
-        public GNode From { get { return from; } }
-        public GNode To { get { return to; } }
+        public GNode From { get { return (GNode) from.Container.NodeDict[from.ID]; } }
+        public GNode To { get { return (GNode) to.Container.NodeDict[to.ID]; ; } }
         public string LineType
         {
             get { return lineType; }

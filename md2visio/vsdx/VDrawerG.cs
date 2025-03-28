@@ -70,7 +70,9 @@ namespace md2visio.vsdx
                 if (node is GBorderNode) continue;
 
                 Shape shape = CreateShape(node);
-
+                SetFillForegnd(shape, "config.themeVariables.primaryColor");
+                SetLineColor(shape, "config.themeVariables.primaryBorderColor");
+                SetTextColor(shape, "config.themeVariables.primaryTextColor");
                 if (alignBound.IsEmpty()) alignBound = new VShapeBoundary(shape);
                 else
                 {
@@ -188,7 +190,7 @@ namespace md2visio.vsdx
         {
             if (gSubgraph.Parent == null) throw new SynException("expected parent of subgraph");
 
-            GNode node = gSubgraph.BorderNode; // new GNode(gSubgraph.Parent, gSubgraph.ID);
+            GNode node = gSubgraph.BorderNode; 
             VBoundary bnd = SubgraphBoundary(gSubgraph);
             Shape shape = CreateShape(node);
             shape.CellsU["Width"].FormulaU = (bnd.Width + GNode.SPACE * 2).ToString();
@@ -198,6 +200,10 @@ namespace md2visio.vsdx
             shape.CellsU["FillPattern"].FormulaU = "0";
             shape.CellsU["VerticalAlign"].FormulaU = "0";
             shape.Text = gSubgraph.Label;
+            SetFillForegnd(shape, "config.themeVariables.secondaryColor");
+            SetLineColor(shape, "config.themeVariables.secondaryBorderColor");
+            SetTextColor(shape, "config.themeVariables.secondaryTextColor");
+            visioApp.DoCmd((short)VisUICmds.visCmdObjectSendToBack);
             gSubgraph.VisioShape = shape;
 
             return node;

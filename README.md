@@ -31,6 +31,7 @@ Generated Visio graph:
 Development plan:
 
 - [x] graph / flowchart
+  - [x] themes
 - [x] journey
 - [ ] sequenceDiagram
 - [ ] classDiagram
@@ -59,5 +60,5 @@ Development plan:
 - [ ] kanban
 - [ ] architecture-beta
 - [ ] Configuration
-  - [ ] frontmeter
-  - [ ] directive
+  - [x] frontmatter
+  - [x] directive

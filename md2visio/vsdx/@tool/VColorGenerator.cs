@@ -1,10 +1,10 @@
-﻿namespace md2visio.vsdx
+﻿namespace md2visio.vsdx.@tool
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ColorGenerator
+    public class VColorGenerator
     {
         // Method to calculate the brightness of a color
         private static double CalculateBrightness(int r, int g, int b)

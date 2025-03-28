@@ -7,25 +7,24 @@ namespace md2visio.mermaid.cmn
         abstract public T? GetValue<T>(string keyPath) where T : class;
         abstract public void SetValue(string key, object value);
 
-        virtual public string? GetString(string keyPath)
+        virtual public bool GetString(string keyPath, out string s)
         {
-            return GetValue<string>(keyPath);
+            s = GetValue<string>(keyPath) ?? string.Empty;
+            return s != string.Empty;
         }
 
-        virtual public(bool success, int r) GetInt(string keyPath)
+        virtual public bool GetInt(string keyPath, out int i)
         {
             string? val = GetValue<string>(keyPath);
-            int r = 0;
-            bool success = int.TryParse(val, out r);
-            return (success, r);
+            bool success = int.TryParse(val, out i);
+            return success;
         }
 
-        virtual public(bool success, double r) GetDouble(string keyPath)
+        virtual public bool GetDouble(string keyPath, out double d)
         {
             string? val = GetValue<string>(keyPath);
-            double r = 0;
-            bool success = double.TryParse(val, out r);
-            return (success, r);
+            bool success = double.TryParse(val, out d);
+            return success;
         }
 
         protected void AppendKey(StringBuilder path, string key)

@@ -1,6 +1,7 @@
 ﻿using md2visio.struc.figure;
 using md2visio.struc.pie;
 using md2visio.vsdx.@base;
+using md2visio.vsdx.tool;
 using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 
@@ -17,7 +18,7 @@ namespace md2visio.vsdx
         override public void Draw()
         {
             // sector
-            List<Tuple<int, int, int>> colors = ColorGenerator.Generate(figure.InnerNodes.Count);
+            List<Tuple<int, int, int>> colors = VColorGenerator.Generate(figure.InnerNodes.Count);
             total = figure.TotalNum();
             int ci = 0;
             foreach(INode item in figure.InnerNodes.Values)
@@ -50,8 +51,8 @@ namespace md2visio.vsdx
             // textPosition
             double textPosition = 0.75;
             Pie pie = item.Container.DownCast<Pie>();
-            (bool success, double tpos) = pie.Directive.GetDouble("init.pie.textPosition");
-            if (success) textPosition = tpos;
+            if (pie.Directive.GetDouble("init.pie.textPosition", out double tpos)) 
+                textPosition = tpos;
             (x, y) = ControlPoint(Width(sector) * textPosition, drawnAngle + rad / 2);
             DropText($"{(percent * 100).ToString("N0")}%", x, y);
 
@@ -92,9 +93,8 @@ namespace md2visio.vsdx
             SetShapeSheet(shape, "FillPattern", "0");
 
             double outerStrokeWidth = 0.2646; // 0.2646 mm = 0.75 pt
-            string? value = pie.Directive.GetString("init.themeVariables.pieOuterStrokeWidth");
-            (bool success, string uname, double unitVal) = UnitValue(value);
-            if (success)
+            if (pie.Directive.GetString("init.themeVariables.pieOuterStrokeWidth", out string value) &&
+                UnitValue(value, out string uname, out double unitVal))
             {
                 if (uname.EndsWith("pt")) outerStrokeWidth = Pt2MM() * unitVal;
                 else if (uname.EndsWith("px")) outerStrokeWidth = Pix2MM() * unitVal;

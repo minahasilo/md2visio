@@ -1,58 +1,85 @@
-﻿using md2visio.mermaid.cmn;
-
-namespace md2visio.struc.figure
+﻿namespace md2visio.struc.figure
 {
-    internal class Config(MmdFrontMatter frontMatter, MmdJsonObj directive)
+    internal class Config: IConfig
     {
-        MmdFrontMatter frontMatter = frontMatter;
-        MmdJsonObj directive = directive;
+        ConfigDefaults configDefaults = new();
+        MmdFrontMatter userFrontMatter = new();
+        MmdJsonObj userDirective = new();
 
-        public MmdFrontMatter FrontMatter { get => frontMatter; set => frontMatter = value; }
-        public MmdJsonObj Directive { get => directive; set => directive = value; }
+        public MmdFrontMatter UserFrontMatter { get => userFrontMatter; set => userFrontMatter = value; }
+        public MmdJsonObj UserDirective { get => userDirective; set => userDirective = value; }
 
-        public MmdJsonObj LoadDirective(string directive)
+        public Config(Figure figure)
+        {
+            configDefaults.Figure = figure;
+        }
+        public MmdFrontMatter LoadUserDirective(string directive)
         {
             try
             {
-                return Directive.Load(directive);
+                userDirective.Load(directive);
+                return userFrontMatter.UpdateWith(UserDirective);
             }
             catch (ArgumentException)
             {
-                return Empty.Get<MmdJsonObj>();
+                return userFrontMatter;
             }
         }
 
-        public MmdJsonObj LoadDirectiveFromComment(string comment)
+        public MmdFrontMatter LoadUserDirectiveFromComment(string comment)
         {
-            if (!comment.TrimEnd(' ').EndsWith("%%")) return Empty.Get<MmdJsonObj>();
+            if (!comment.TrimEnd(' ').EndsWith("%%")) return Empty.Get<MmdFrontMatter>();
 
             char[] trims = ['%', '\t', '\n', '\r', '\f', ' '];
             string setting = comment.TrimStart(trims).TrimEnd(trims);
-            return LoadDirective(setting);
+            return LoadUserDirective(setting);
         }
-        public MmdFrontMatter LoadFrontMatter(string frontMatter)
+        public MmdFrontMatter LoadUserFrontMatter(string frontMatter)
         {
-            return FrontMatter.Load(frontMatter);
-        }
-
-        public (bool success, double d) GetDouble(string keyPath)
-        {
-            (bool success, double d) = directive.GetDouble(keyPath);
-            if (success) return (success, d);
-            return frontMatter.GetDouble(keyPath);
-        }
-        public (bool success, int i) GetInt(string keyPath)
-        {
-            (bool success, int i) = directive.GetInt(keyPath);
-            if (success) return (success, i);
-            return frontMatter.GetInt(keyPath);
+            return UserFrontMatter.LoadYaml(frontMatter);
         }
 
-        public string? GetString(string keyPath)
+        public bool GetDouble(string keyPath, out double d)
         {
-            string? s = directive.GetString(keyPath);
-            if (s != null) return s;
-            return frontMatter.GetString(keyPath);
+            if(GetUserDouble(keyPath, out d)) return true;
+            return UpdateDefaults().GetDouble(keyPath, out d);
+        }
+        public bool GetInt(string keyPath, out int i)
+        {
+            if(GetUserInt(keyPath, out i)) return true;
+            return UpdateDefaults().GetInt(keyPath, out i);
+        }
+        public bool GetString(string keyPath, out string s)
+        {
+            if(GetUserString(keyPath, out s)) return true;
+            return UpdateDefaults().GetString(keyPath, out s);
+        }
+
+        bool GetUserString(string keyPath, out string s)
+        {
+            if (userDirective.GetString(keyPath, out s)) return true;
+            return userFrontMatter.GetString(keyPath, out s);
+        }
+
+        bool GetUserInt(string keyPath, out int i)
+        {
+            if (userDirective.GetInt(keyPath, out i)) return true;
+            return userFrontMatter.GetInt(keyPath, out i);
+        }
+
+        bool GetUserDouble(string keyPath, out double d)
+        {
+            if (userDirective.GetDouble(keyPath, out d)) return true;
+            return userFrontMatter.GetDouble(keyPath, out d);
+        }
+
+        ConfigDefaults UpdateDefaults()
+        {
+            configDefaults.Theme = GetUserString("config.theme", out string theme) ? theme : "default";
+            configDefaults.DarkMode = GetUserString("config.themeVariables.darkMode", out string darkMode) 
+                && darkMode == "true";    
+
+            return configDefaults;
         }
     }
 }

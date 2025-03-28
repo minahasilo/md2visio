@@ -1,4 +1,6 @@
-﻿using Microsoft.Office.Interop.Visio;
+﻿using md2visio.struc.figure;
+using md2visio.vsdx.tool;
+using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using Drawing = System.Drawing;
@@ -8,7 +10,7 @@ namespace md2visio.vsdx.@base
     internal abstract class VShapeDrawer
     {
         public static string VSSX = "md2visio.vssx";
-        public Shape EmptyShape { get; }
+        public Shape EmptyShape { get; } = Empty.Get<EmptyShape>();
 
         protected Application visioApp;
         protected Page visioPage;
@@ -19,7 +21,6 @@ namespace md2visio.vsdx.@base
             this.visioApp = visioApp;
             visioPage = visioApp.ActivePage;
             stencilDoc = visioApp.Documents.OpenEx(VSSX, (short)VisOpenSaveArgs.visOpenDocked);
-            EmptyShape = visioPage.DrawRectangle(0, 0, 0, 0);
         }
 
         public Master? GetMaster(string vssx, string name)
@@ -77,12 +78,12 @@ namespace md2visio.vsdx.@base
             string fontName = FontName(visioApp, shape);
             SizeF sizeF = MeasureTextSizeMM(shape.Text, fontName, fontSizeMM);
 
-            double leftMargin = ShapeSheet(shape, "LeftMargin", "mm");
-            double rightMargin = ShapeSheet(shape, "LeftMargin", "mm");
-            double topMargin = ShapeSheet(shape, "TopMargin", "mm");
-            double bottomMargin = ShapeSheet(shape, "BottomMargin", "mm");
-            shape.CellsU["Width"].FormulaU = $"={sizeF.Width + leftMargin + rightMargin + paddingMM.Width * 2} mm";
-            shape.CellsU["Height"].FormulaU = $"={sizeF.Height + topMargin + bottomMargin + paddingMM.Height * 2} mm";
+            double wRate = (Width(shape) == 0 ? 1 : ShapeSheetIU(shape, "TxtWidth") / Width(shape));
+            double hRate = (Height(shape) == 0? 1 : ShapeSheetIU(shape, "TxtHeight") / Height(shape));
+            double hMargin = ShapeSheet(shape, "LeftMargin", "mm") + ShapeSheet(shape, "LeftMargin", "mm");
+            double vMargin = ShapeSheet(shape, "TopMargin", "mm") + ShapeSheet(shape, "BottomMargin", "mm");
+            shape.CellsU["Width"].FormulaU = $"={sizeF.Width / wRate + hMargin + paddingMM.Width * 2} mm";
+            shape.CellsU["Height"].FormulaU = $"={sizeF.Height / hRate + vMargin + paddingMM.Height * 2} mm";
         }
 
         public void AdjustSize(Shape shape)
@@ -101,10 +102,8 @@ namespace md2visio.vsdx.@base
             shape.CellsU["PinY"].FormulaU = piny;
         }
 
-        public static void MoveTo(Shape? shape, PointF pos)
+        public static void MoveTo(Shape shape, PointF pos)
         {
-            if (shape == null) return;
-
             shape.CellsU["PinX"].FormulaU = pos.X.ToString();
             shape.CellsU["PinY"].FormulaU = pos.Y.ToString();
         }
@@ -142,24 +141,24 @@ namespace md2visio.vsdx.@base
             return 0;
         }
 
-        public (bool success, string unit, double unitVal) UnitValue(string? unitStr)
+        public bool UnitValue(string? unitStr, out string unit, out double unitVal)
         {
             bool success = false;
-            string uname = string.Empty;
-            double result = 0;
+            unit = string.Empty;
+            unitVal = 0;
 
             if (unitStr != null)
             {
                 unitStr = unitStr.Trim().ToLower();
-                if (unitStr.EndsWith("pt")) uname = "pt";
-                else if (unitStr.EndsWith("px")) uname = "px";
-                else if (unitStr.EndsWith("mm")) uname = "mm";
+                if (unitStr.EndsWith("pt")) unit = "pt";
+                else if (unitStr.EndsWith("px")) unit = "px";
+                else if (unitStr.EndsWith("mm")) unit = "mm";
 
-                if (uname.Length > 0) unitStr = unitStr.Substring(0, unitStr.Length - uname.Length);
-                success = double.TryParse(unitStr, out result);
+                if (unit.Length > 0) unitStr = unitStr.Substring(0, unitStr.Length - unit.Length);
+                success = double.TryParse(unitStr, out unitVal);
             }
 
-            return (success, uname, result);
+            return success;
         }
 
         public static double FontSize(Shape shape, string unit)
@@ -278,6 +277,17 @@ namespace md2visio.vsdx.@base
         {
             SetShapeSheet(shape, "FillPattern", "1");
             SetShapeSheet(shape, "FillForegnd", $"THEMEGUARD(RGB({color.Item1},{color.Item2},{color.Item3}))");
+        }
+
+        public static void SetFillForegnd(Shape shape, VRGBColor color)
+        {
+            SetShapeSheet(shape, "FillPattern", "1");
+            SetShapeSheet(shape, "FillForegnd", $"THEMEGUARD({color.RGB()})");
+        }
+
+        public static void SetLineColor(Shape shape, VRGBColor color)
+        {
+            SetShapeSheet(shape, "LineColor", $"THEMEGUARD({color.RGB()})");
         }
 
         public static void SetRounding(Shape shape, string rounding)

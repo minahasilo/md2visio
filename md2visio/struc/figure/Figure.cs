@@ -1,23 +1,22 @@
-﻿using md2visio.mermaid.cmn;
-
-namespace md2visio.struc.figure
+﻿namespace md2visio.struc.figure
 {
     internal abstract class Figure : Container
     {
         string title = string.Empty;
-        Config config = new Config(new MmdFrontMatter(), new MmdJsonObj());
+        Config config;
 
         public string Title
         {
             get => title;
             set => title = value.Trim();
         }
-        public MmdFrontMatter FrontMatter { get => config.FrontMatter; }
-        public MmdJsonObj Directive { get => config.Directive; }
+        public MmdFrontMatter FrontMatter { get => config.UserFrontMatter; }
+        public MmdJsonObj Directive { get => config.UserDirective; }
         public Config Config { get => config; }
 
         public Figure()
         {
+            config = new Config(this);
         }        
 
         public abstract void ToVisio(string path);

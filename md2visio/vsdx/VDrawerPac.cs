@@ -49,8 +49,7 @@ namespace md2visio.vsdx
 
         void DrawTitle(Packet packet, VBoundary lineBound)
         {
-            string? title = packet.FrontMatter.GetString("title");
-            if (!string.IsNullOrEmpty(title))
+            if (packet.FrontMatter.GetString("title", out string title))
             {
                 Shape shape = DropText(title, lineBound.PinX, lineBound.PinY);
                 AlignTop(shape, lineBound.Bottom - MM2VisioUnit(shape));

@@ -1,6 +1,7 @@
 ﻿using md2visio.struc.figure;
 using md2visio.struc.journey;
 using md2visio.vsdx.@base;
+using md2visio.vsdx.tool;
 using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx
@@ -182,7 +183,7 @@ namespace md2visio.vsdx
         {
             HashSet<string> joinerSet = jo.JoinerSet();
             int colorCount = joinerSet.Count + jo.InnerNodes.Count;
-            List<Tuple<int, int, int>> colors = ColorGenerator.Generate(colorCount);
+            List<Tuple<int, int, int>> colors = VColorGenerator.Generate(colorCount);
 
             int index = 0;
             foreach(string joiner in joinerSet) 

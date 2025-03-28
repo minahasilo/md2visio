@@ -1,11 +1,11 @@
 ﻿using md2visio.struc.figure;
-using md2visio.struc.graph;
 using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx.@base
 {
     internal class VBoundary
     {
+        protected bool wild = false; // false: pinx/piny/width/height(0/0/0/0) is valid
         protected double pinx, piny, width, height;
         public double PinX { get { return pinx; } }
         public double PinY { get { return piny; } }
@@ -57,7 +57,12 @@ namespace md2visio.vsdx.@base
                 height = t - value;
             }
         }
+
         public VBoundary() { }
+
+        public VBoundary(bool wild = false) {
+            this.wild = wild;
+        }
 
         public VBoundary(double pinx, double piny, double width, double height)
         {
@@ -109,31 +114,40 @@ namespace md2visio.vsdx.@base
             return clone;
         }
 
-        public static VBoundary Create(LinkedList<GNode> nodes)
-        {
-            VBoundary boundary = Empty.Get<VBoundary>();
-            foreach (var node in nodes)
-            {
-                Shape? shape = node.VisioShape;
-                if (shape == null) continue;
-
-                VBoundary bnd2cmp = new VShapeBoundary(shape);
-                if (boundary.IsEmpty()) { boundary = bnd2cmp; continue; }
-
-                ExpandBoundary(boundary, bnd2cmp);
-            }
-
-            return boundary;
-        }
-
         public void Expand(VBoundary boundary)
         {
+            if(wild)
+            {
+                pinx = boundary.pinx;   piny = boundary.piny;
+                width = boundary.width; height = boundary.height;
+                wild = false;
+                return;
+            }
             ExpandBoundary(this, boundary);
         }
 
         public void Expand(Shape shape)
         {
             Expand(new VShapeBoundary(shape));
+        }
+
+        public void Grow(Shape shape, GrowthDirection direct, double space)
+        {
+            if (direct.H != 0)
+            {
+                if (direct.H > 0) VShapeDrawer.AlignLeft(shape, Right + space);
+                else VShapeDrawer.AlignRight(shape, Left - space);
+            }
+            else if (direct.V != 0)
+            {
+                if (direct.V > 0) VShapeDrawer.AlignBottom(shape, Top + space);
+                else VShapeDrawer.AlignTop(shape, Bottom - space);
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"L:{Left} T:{Top} R:{Right} B:{Bottom}";
         }
 
         public static void ExpandBoundary(VBoundary bnd2expand, VBoundary bndCompare)

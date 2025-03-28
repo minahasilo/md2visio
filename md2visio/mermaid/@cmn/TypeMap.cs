@@ -40,5 +40,14 @@ namespace md2visio.mermaid.cmn
             { "packet-beta", typeof(PacBuilder) }, { "packet", typeof(PacBuilder) },
             { "xychart-beta", typeof(XyBuilder) }, { "xychart", typeof(XyBuilder) },
         };
+
+        public static readonly Dictionary<string, string> ConfigMap = new()
+        {
+            {typeof(Graph).Name, "flowchart"},
+            {typeof(Journey).Name, "journey"},
+            {typeof(Packet).Name, "packet"},
+            {typeof(Pie).Name, "pie"},
+            {typeof(XyChart).Name, "xyChart"},
+        };
     }
 }

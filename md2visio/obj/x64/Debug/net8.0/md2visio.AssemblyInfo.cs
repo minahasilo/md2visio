@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("md2visio")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9956615e0a9f7ebc7af161bb1647dd8c21b69f20")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6655c2cfbd68fdf68e39042bd83a94fecf6df08a")]
 [assembly: System.Reflection.AssemblyProductAttribute("md2visio")]
 [assembly: System.Reflection.AssemblyTitleAttribute("md2visio")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿using md2visio.mermaid.cmn;
+﻿using md2visio.struc.figure;
 using System.Text.RegularExpressions;
 
 namespace md2visio.struc.graph
@@ -58,7 +58,7 @@ namespace md2visio.struc.graph
         public static GNodeShape CreateExtend(string text)
         {
             GNodeShape shape = new GNodeShape();
-            shape.data.Join(new MmdJsonObj(text));
+            shape.data.UpdateWith(new MmdJsonObj(text));
             return shape;
         }
 

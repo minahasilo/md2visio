@@ -1,6 +1,5 @@
 ﻿using md2visio.mermaid.cmn;
 using md2visio.struc.figure;
-using md2visio.vsdx;
 using Microsoft.Office.Interop.Visio;
 using System.Text;
 

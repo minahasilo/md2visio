@@ -7,6 +7,8 @@ namespace md2visio.struc.graph
     internal class GBuilder : FigureBuilder
     {
         static List<GNode> EmptyList = new List<GNode>();
+
+        Graph graph = new Graph();
         Stack<Graph> stack = new Stack<Graph>();
         List<GNode> fromNodes = EmptyList, toNodes = EmptyList;
         GEdge edge = Empty.Get<GEdge>();
@@ -35,11 +37,11 @@ namespace md2visio.struc.graph
                         ConnectNodes();
                     }
                 }
-                else if (cur is GSttLinkStart) BuildEdge();
-                else if (cur is GSttNoLabelLink) BuildEdge();
-                else if (cur is SttComment) { }
-                else if (cur is SttFrontMatter) { }
-                else if (cur is SttFinishFlag) { }
+                else if (cur is GSttLinkStart)      BuildEdge();
+                else if (cur is GSttNoLabelLink)    BuildEdge();
+                else if (cur is SttComment)     { graph.Config.LoadUserDirectiveFromComment(cur.Fragment); }
+                else if (cur is SttFrontMatter) { graph.Config.LoadUserFrontMatter(cur.Fragment); }
+                else if (cur is SttFinishFlag)  { }
             }
         }
 
@@ -134,8 +136,7 @@ namespace md2visio.struc.graph
             string frag = iter.Current.Fragment;
 
             if (frag == "graph" || frag == "flowchart")
-            {
-                Graph graph = new Graph();
+            {                
                 graph.SetParam(iter.Next().CompoList);
                 stack.Push(graph);
             }

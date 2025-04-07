@@ -26,6 +26,22 @@ Generated Visio graph:
 
 <img src="https://github.com/Megre/md2visio/blob/main/example.png" alt="journey.vssx" style="zoom: 50%;" />
 
+
+
+# Usage
+
+```bat
+md2visio /I MD_FILE /O OUTPUT_PATH [/V] [/Y]
+
+/I      Specify the path of the input file (.md)
+/O      Specify the path/folder of the output file (.vsdx)
+/V      Show the Visio application while drawing (optional, default is invisible)
+/Y      Quietly overwrite the existing output file (optional, by default requires user confirmation
+/?		Print this help
+```
+
+
+
 # Supported Mermaid Figure
 
 Development plan:
@@ -33,17 +49,15 @@ Development plan:
 - [x] graph / flowchart
   - [x] themes
 - [x] journey
+  - [x] themes
 - [ ] sequenceDiagram
 - [ ] classDiagram
 - [ ] stateDiagram
 - [ ] stateDiagram-v2
 - [ ] erDiagram
-- [ ] journey
 - [ ] gantt
 - [x] pie
-  - [x] directive
-    - [x] `textPosition`
-    - [x] `pieOuterStrokeWidth`
+  - [x] themes
 - [ ] quadrantChart
 - [ ] requirementDiagram
 - [ ] gitGraph
@@ -55,10 +69,9 @@ Development plan:
 - [ ] xychart-beta
 - [ ] block-beta
 - [x] packet-beta
-  - [x] frontmeter
-    - [x] title
+  - [x] themes
 - [ ] kanban
 - [ ] architecture-beta
-- [ ] Configuration
+- [x] Configuration
   - [x] frontmatter
   - [x] directive

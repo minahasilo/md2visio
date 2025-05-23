@@ -1,5 +1,4 @@
-﻿using md2visio.struc.figure;
-using md2visio.vsdx.tool;
+﻿using md2visio.vsdx.tool;
 using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 using System.Text.RegularExpressions;
@@ -10,7 +9,7 @@ namespace md2visio.vsdx.@base
     internal abstract class VShapeDrawer
     {
         public static string VSSX = "md2visio.vssx";
-        public Shape EmptyShape { get; } = Empty.Get<EmptyShape>();
+        static Shape? shadow = null;
 
         protected Application visioApp;
         protected Page visioPage;
@@ -78,13 +77,21 @@ namespace md2visio.vsdx.@base
             string fontName = FontName(visioApp, shape);
             SizeF sizeF = MeasureTextSizeMM(shape.Text, fontName, fontSizeMM);
 
-            double wRate = (Width(shape) == 0 ? 1 : ShapeSheetIU(shape, "TxtWidth") / Width(shape));
-            double hRate = (Height(shape) == 0? 1 : ShapeSheetIU(shape, "TxtHeight") / Height(shape));
+            double TxtWidthRate() {
+                if (Width(shape) == 0 || ShapeSheetIU(shape, "TxtWidth") == 0) return 1;
+                return ShapeSheetIU(shape, "TxtWidth") / Width(shape);
+            }
+            double TxtHeightRate()
+            {
+                if (Height(shape) == 0 || ShapeSheetIU(shape, "TxtHeight") == 0) return 1;
+                return ShapeSheetIU(shape, "TxtHeight") / Height(shape);
+            }
             double hMargin = ShapeSheet(shape, "LeftMargin", "mm") + ShapeSheet(shape, "LeftMargin", "mm");
             double vMargin = ShapeSheet(shape, "TopMargin", "mm") + ShapeSheet(shape, "BottomMargin", "mm");
-            shape.CellsU["Width"].FormulaU = $"={sizeF.Width / wRate + hMargin + paddingMM.Width * 2} mm";
-            shape.CellsU["Height"].FormulaU = $"={sizeF.Height / hRate + vMargin + paddingMM.Height * 2} mm";
+            shape.CellsU["Width"].FormulaU = $"={sizeF.Width / TxtWidthRate() + hMargin + paddingMM.Width * 2} mm";
+            shape.CellsU["Height"].FormulaU = $"={sizeF.Height / TxtHeightRate() + vMargin + paddingMM.Height * 2} mm";
         }
+
 
         public void AdjustSize(Shape shape)
         {
@@ -161,6 +168,23 @@ namespace md2visio.vsdx.@base
             return success;
         }
 
+        public SizeF MeasureTextSizeMM(string text)
+        {
+            if(shadow == null)
+            {
+                shadow = DropText(text);
+                SetTextColor(shadow, VNamedColor.Create("white"));
+            }
+            shadow.Text = text;
+            SizeF size = MeasureTextSizeMM(text, FontName(visioApp, shadow), FontSize(shadow));
+            return size;
+        }
+
+        public static void RemoveShadow()
+        {
+            if(shadow != null) shadow.Delete();
+        }
+
         public static double FontSize(Shape shape, string unit)
         {
             string sval = shape.CellsU["Char.Size"].ResultStr[unit]; // pt, mm
@@ -206,6 +230,12 @@ namespace md2visio.vsdx.@base
         {
             SetShapeSheet(shape, "Height", $"{height}");
         }
+
+        public static void SetTextColor(Shape shape, VColor color)
+        {
+            shape.CellsU["Char.Color"].FormulaU = $"THEMEGUARD({color.RGB()})";
+        }
+
 
         public static double LeftMargin(Shape shape)
         {

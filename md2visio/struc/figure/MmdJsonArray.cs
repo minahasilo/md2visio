@@ -1,13 +1,15 @@
 ﻿using md2visio.mermaid.cmn;
+using System.Collections;
 using System.Text;
 
 namespace md2visio.struc.figure
 {
-    internal class MmdJsonArray : ValueAccessor
+    internal class MmdJsonArray : ValueAccessor, IEnumerable<object>
     {
         readonly List<object> list = [];
         int index = 0;
         public int Index { get { return index; } }
+        public int Count {  get { return list.Count; } }
 
         public MmdJsonArray() { }
 
@@ -159,6 +161,44 @@ namespace md2visio.struc.figure
                     .Append(item == list.Last() ? string.Empty : ", ");
             }
             return $"{sb}]";
+        }
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            return new MmdJsonArrayEnumerator(list);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new MmdJsonArrayEnumerator(list);
+        }
+
+        private class MmdJsonArrayEnumerator : IEnumerator<object>
+        {
+            private List<object> data;
+            private int index = -1;
+
+            public MmdJsonArrayEnumerator(List<object> data)
+            {
+                this.data = data;
+            }
+
+            public object Current => data[index];
+
+            object IEnumerator.Current => Current;
+
+            public void Dispose() { }
+
+            public bool MoveNext()
+            {
+                index++;
+                return index < data.Count;
+            }
+
+            public void Reset()
+            {
+                index = -1;
+            }
         }
     }
 }

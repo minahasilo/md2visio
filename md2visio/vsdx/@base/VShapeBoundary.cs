@@ -1,14 +1,13 @@
 ﻿using md2visio.struc.figure;
-using md2visio.vsdx.@base;
 using Microsoft.Office.Interop.Visio;
 
 namespace md2visio.vsdx.@base
 {
     internal class VShapeBoundary : VBoundary
     {
-        Shape shape = Empty.Get<EmptyShape>();
+        Shape? shape;
 
-        public Shape Shape { get => shape; }
+        public Shape? Shape { get => shape; }
 
         public VShapeBoundary() { }
 

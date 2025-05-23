@@ -1,9 +1,6 @@
 ﻿using md2visio.struc.figure;
-using md2visio.vsdx._tool;
-using md2visio.vsdx.@base;
-using md2visio.vsdx.tool;
+using md2visio.vsdx.@tool;
 using Microsoft.Office.Interop.Visio;
-using System.Drawing;
 
 namespace md2visio.vsdx.@base
 {
@@ -23,11 +20,16 @@ namespace md2visio.vsdx.@base
 
         public void SetFillForegnd(Shape shape, string configPath)
         {
-            if (config.GetString(configPath, out string color))
+            if (config.GetString(configPath, out string sColor))
             {
-                SetShapeSheet(shape, "FillPattern", "1");
-                SetShapeSheet(shape, "FillForegnd", $"THEMEGUARD({VColor.Create(color).RGB()})");
+                SetFillForegnd(shape, VColor.Create(sColor));
             }
+        }
+
+        public void SetFillForegnd(Shape shape, VColor color)
+        {
+            SetShapeSheet(shape, "FillPattern", "1");
+            SetShapeSheet(shape, "FillForegnd", $"THEMEGUARD({color.RGB()})");
         }
 
         public void SetLineColor(Shape shape, string configPath)
@@ -43,5 +45,11 @@ namespace md2visio.vsdx.@base
                 shape.CellsU["Char.Color"].FormulaU = $"THEMEGUARD({VColor.Create(color).RGB()})";
             }
         }
+
+        public List<string> GetStringList(string prefix, int maxCount = 13)
+        {
+            return figure.Config.GetStringList(prefix, maxCount);
+        }
+
     }
 }

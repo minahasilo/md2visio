@@ -1,8 +1,9 @@
 ﻿using md2visio.struc.figure;
 using md2visio.struc.journey;
 using md2visio.vsdx.@base;
-using md2visio.vsdx.tool;
+using md2visio.vsdx.@tool;
 using Microsoft.Office.Interop.Visio;
+using System.Drawing;
 
 namespace md2visio.vsdx
 {
@@ -11,8 +12,7 @@ namespace md2visio.vsdx
     {
         VBoundary drawBound = Empty.Get<VBoundary>();    
         VBoundary allTaskBound = new VBoundary();
-        Dictionary<string, Tuple<int, int, int>> colorMap = new Dictionary<string, Tuple<int, int, int>>();
-
+        Dictionary<string, VColor> colorMap = new();
         override public void Draw()
         {
             InitColors(figure);
@@ -99,9 +99,10 @@ namespace md2visio.vsdx
             Shape ?shapeSection = visioPage.Drop(master, 0, 0);
             shapeSection.Text = section.ID;
             section.VisioShape = shapeSection;
-            AdjustSize(shapeSection);
+            AdjustSize(shapeSection, new SizeF(0, 1.6f));
             AlignLeftTop(shapeSection, drawBound.Left, drawBound.Top);
             SetFillForegnd(shapeSection, colorMap[section.ID]);
+            SetTextColor(shapeSection, "config.themeVariables.primaryTextColor");
 
             drawBound = new VShapeBoundary(shapeSection);
             drawBound.AlignTop(drawBound.Bottom - 0.15);
@@ -140,6 +141,7 @@ namespace md2visio.vsdx
             if(task.Section != null) 
                 SetFillForegnd(shapeTask, colorMap[task.Section.ID]);
             SetRounding(shapeTask, "0.6 mm");
+            SetTextColor(shapeTask, "config.themeVariables.primaryTextColor");
 
             AlignLeftTop(shapeTask, drawBound.Left, drawBound.Top);
             VBoundary taskBound = new VShapeBoundary(shapeTask);
@@ -181,15 +183,22 @@ namespace md2visio.vsdx
 
         void InitColors(Journey jo)
         {
-            HashSet<string> joinerSet = jo.JoinerSet();
-            int colorCount = joinerSet.Count + jo.InnerNodes.Count;
-            List<Tuple<int, int, int>> colors = VColorGenerator.Generate(colorCount);
+            List<INode> sectionList = jo.InnerNodes.Values.ToList();
+            List<string> joinerList = jo.JoinerSet().ToList();
 
-            int index = 0;
-            foreach(string joiner in joinerSet) 
-                colorMap.Add(joiner, colors[index++]);
-            foreach(INode node in jo.InnerNodes.Values)
-                colorMap.Add(node.ID, colors[index++]);
+            List<string> colors = GetStringList("config.themeVariables.fillType");
+            this.Assert(colors.Count > 0, "error reading 'config.themeVariables.fillType?'");
+            for (int i = 0; i < jo.InnerNodes.Count; i++)
+            {
+                 colorMap.Add(sectionList[i].ID, VColor.Create(colors[i % colors.Count]));
+            }
+
+            colors = GetStringList("config.journey.actorColours.");
+            this.Assert(colors.Count > 0, "error reading 'config.journey.actorColours.?'");
+            for (int i = 0; i < joinerList.Count; i++)
+            {
+                 colorMap.Add(joinerList[i], VColor.Create(colors[i % colors.Count]));
+            }
         }
 
         Master? GetScoreMaster(int score)

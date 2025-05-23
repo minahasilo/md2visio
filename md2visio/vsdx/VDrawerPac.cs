@@ -53,6 +53,7 @@ namespace md2visio.vsdx
             {
                 Shape shape = DropText(title, lineBound.PinX, lineBound.PinY);
                 AlignTop(shape, lineBound.Bottom - MM2VisioUnit(shape));
+                SetTextColor(shape, "config.themeVariables.packet.titleColor");
             }
         }
 
@@ -62,7 +63,9 @@ namespace md2visio.vsdx
             int bitNum2Draw = BitNum2Draw(bitNum);
 
             DrawnLine line = CurLine();
-            DropShape(block);
+            Shape shape = DropShape(block);
+            SetFillForegnd(shape, "config.themeVariables.packet.blockFillColor");
+            SetTextColor(shape, "config.themeVariables.packet.labelColor");
             line.AddNode(block);
             
             bitNumInLine += bitNum2Draw;
@@ -256,6 +259,7 @@ namespace md2visio.vsdx
             SetShapeSheet(text, "TopMargin", "0");
             SetShapeSheet(text, "BottomMargin", "0");
             SetShapeSheet(text, "Char.Size", $"{FontSize(text) * 0.7}");
+            SetTextColor(text, "config.themeVariables.packet.labelColor");
             visioApp.DoCmd((short)VisUICmds.visCmdTextVAlignBottom);
             return text;
         }

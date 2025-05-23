@@ -8,7 +8,9 @@ namespace md2visio.struc.figure
     {
         object? yamlObj;
 
-        public MmdFrontMatter(): this("{}") { }
+        public MmdFrontMatter() {
+            LoadYaml("{}");
+        }
 
         public MmdFrontMatter(string yaml)
         {

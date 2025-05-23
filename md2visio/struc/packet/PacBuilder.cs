@@ -16,8 +16,8 @@ namespace md2visio.struc.packet
                 if (cur is SttMermaidStart) { }
                 if (cur is SttMermaidClose) { packet.ToVisio(outputFile); break; }
                 if (cur is PacSttTuple) { BuildBits((PacSttTuple) cur); }
-                if (cur is SttComment) { packet.Config.LoadDirectiveFromComment(cur.Fragment); }
-                if (cur is SttFrontMatter) { packet.Config.LoadFrontMatter(cur.Fragment); } 
+                if (cur is SttComment) { packet.Config.LoadUserDirectiveFromComment(cur.Fragment); }
+                if (cur is SttFrontMatter) { packet.Config.LoadUserFrontMatter(cur.Fragment); } 
             }
         }
 

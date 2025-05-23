@@ -24,7 +24,7 @@
 
     class EmptyFigure : Figure
     {
-        public static EmptyFigure Instance { get; } = Empty.Get<EmptyFigure>();
+        public static EmptyFigure Instance = new EmptyFigure();
         public EmptyFigure() { }
 
         public override void ToVisio(string path)

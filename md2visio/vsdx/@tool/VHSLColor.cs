@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace md2visio.vsdx._tool
+namespace md2visio.vsdx.@tool
 {
     internal class VHSLColor: VColor
     {
@@ -17,7 +17,7 @@ namespace md2visio.vsdx._tool
             return new VHSLColor(H, S, L, a);
         }
 
-        protected static readonly Regex regHSL = new Regex(@"^\s*hsla?\s*\(\s*(?<h>\d*(.\d*)?)\s*,\s*(?<s>\d*(.\d*)?\s*%?)\s*,\s*(?<l>\d*(.\d*)?\s*%?)\s*(?<a>\d*(.\d*)?)\s*\)\s*$", RegexOptions.Compiled);
+        protected static readonly Regex regHSL = new Regex(@"^\s*hsla?\s*\(\s*(?<h>(?:-\s*)?\d*(.\d*)?)\s*,\s*(?<s>\d*(.\d*)?\s*%?)\s*,\s*(?<l>\d*(.\d*)?\s*%?)\s*(?<a>\d*(.\d*)?)\s*\)\s*$", RegexOptions.Compiled);
         public static bool IsHSL(string color)
         {
             return regHSL.IsMatch(color.Trim().ToLower());

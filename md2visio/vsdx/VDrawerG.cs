@@ -231,18 +231,10 @@ namespace md2visio.vsdx
 
         public Shape CreateShape(GNode node)
         {
-            Shape shape = EmptyShape;
-            string start = node.ShapeStart, close = node.ShapeClose;
-            Master? master = GetMaster($"{start}{close}");
-
-            if (master != null)
-            {
-                shape = visioPage.Drop(master, 0, 0);
-                shape.Text = node.Label;
-                AdjustSize(shape);
-                node.VisioShape = shape;
-            }
-
+            Shape shape = visioPage.Drop(GetMaster($"{node.ShapeStart}{node.ShapeClose}"), 0, 0);
+            shape.Text = node.Label;
+            AdjustSize(shape);
+            node.VisioShape = shape; 
             return shape;
         }
 

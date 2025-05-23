@@ -21,10 +21,10 @@ namespace md2visio.struc.journey
                     journey.ToVisio(outputFile);
                     break;
                 }
-                if (cur is JoSttKeyword) { BuildKeyword(); }
-                if (cur is JoSttTriple) { BuildTask(); }
-                if (cur is SttComment) { }
-                if (cur is SttFrontMatter) { }
+                if (cur is JoSttKeyword)    { BuildKeyword(); }
+                if (cur is JoSttTriple)     { BuildTask(); }
+                if (cur is SttComment)      { journey.Config.LoadUserDirectiveFromComment(cur.Fragment); }
+                if (cur is SttFrontMatter)  { journey.Config.LoadUserFrontMatter(cur.Fragment); }
             }
         }
 

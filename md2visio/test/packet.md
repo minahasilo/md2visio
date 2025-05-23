@@ -1,6 +1,8 @@
 ```mermaid
 ---
 title: "TCP 数据包"
+config:
+  theme: 'forest'
 ---
 packet-beta
     192-252: "数据 (可变长度)"

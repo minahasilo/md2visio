@@ -1,6 +1,4 @@
-﻿using md2visio.vsdx.tool;
-
-namespace md2visio.vsdx._tool
+﻿namespace md2visio.vsdx.@tool
 {
     internal abstract class VColor
     {

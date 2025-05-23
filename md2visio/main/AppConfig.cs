@@ -17,7 +17,7 @@
         {
             for (int i = 0; i < args.Length; i++)
             {
-                string arg = args[i];
+                string arg = args[i].ToUpper();
                 if(arg=="/I" && i + 1 < args.Length)
                     InputFile = args[++i];
                 else if(arg=="/O" && i + 1 < args.Length)
@@ -26,16 +26,22 @@
                     Quiet = true;
                 else if(arg=="/V")
                     Visible = true;
-                else if(arg=="/?")
-                    ShowHelp();
                 else if (arg == "/D")
                     Debug = true;
                 else if (arg == "/T")
                     Test = true;
+                else if(arg == "/?" 
+                    || arg == "/H"   || arg == "/HELP"
+                    || arg == "-H"   || arg == "-HELP"
+                    || arg == "--H"  || arg == "--HELP")
+                    ShowHelp();
             }
 
-            return InputFile != string.Empty && 
+            bool success = InputFile != string.Empty && 
                 OutputPath != string.Empty;
+            if(!success) ShowHelp();
+
+            return success;
         }
 
         void ShowHelp()
@@ -45,7 +51,8 @@
                 "/I\tSpecify the path of the input file (.md)\n" +
                 "/O\tSpecify the path/folder of the output file (.vsdx)\n" +
                 "/V\tShow the Visio application while drawing (optional, default is invisible)\n" +
-                "/Y\tQuietly overwrite the existing output file (optional, by default requires user confirmation");
+                "/Y\tQuietly overwrite the existing output file (optional, by default requires user confirmation" +
+                "/?\tPrint this help");
         }
     }
 }

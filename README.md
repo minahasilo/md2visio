@@ -36,8 +36,8 @@ md2visio /I MD_FILE /O OUTPUT_PATH [/V] [/Y]
 /I      Specify the path of the input file (.md)
 /O      Specify the path/folder of the output file (.vsdx)
 /V      Show the Visio application while drawing (optional, default is invisible)
-/Y      Quietly overwrite the existing output file (optional, by default requires user confirmation
-/?		Print this help
+/Y      Quietly overwrite the existing output file (optional, by default requires user confirmation)
+/?      Print this help
 ```
 
 

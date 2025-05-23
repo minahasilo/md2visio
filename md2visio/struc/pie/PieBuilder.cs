@@ -21,8 +21,8 @@ namespace md2visio.struc.pie
                 }
                 if (cur is PieSttKeyword) { BuildKeyword(); }
                 if (cur is PieSttTuple) { BuildDataItem(); }
-                if (cur is SttComment) { pie.Config.LoadDirectiveFromComment(cur.Fragment); }
-                if (cur is SttFrontMatter) { pie.Config.LoadFrontMatter(cur.Fragment); }
+                if (cur is SttComment) { pie.Config.LoadUserDirectiveFromComment(cur.Fragment); }
+                if (cur is SttFrontMatter) { pie.Config.LoadUserFrontMatter(cur.Fragment); }
             }
         }
 

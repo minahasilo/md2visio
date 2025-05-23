@@ -2,7 +2,7 @@
 {
     internal class Config: IConfig
     {
-        ConfigDefaults configDefaults = new();
+        ConfigDefaults configDefaults;
         MmdFrontMatter userFrontMatter = new();
         MmdJsonObj userDirective = new();
 
@@ -11,7 +11,7 @@
 
         public Config(Figure figure)
         {
-            configDefaults.Figure = figure;
+            configDefaults = new(figure);
         }
         public MmdFrontMatter LoadUserDirective(string directive)
         {
@@ -41,18 +41,29 @@
 
         public bool GetDouble(string keyPath, out double d)
         {
-            if(GetUserDouble(keyPath, out d)) return true;
-            return UpdateDefaults().GetDouble(keyPath, out d);
+            return GetUserDouble(keyPath, out d)
+                || UpdateDefaults().GetDouble(keyPath, out d);
         }
         public bool GetInt(string keyPath, out int i)
         {
-            if(GetUserInt(keyPath, out i)) return true;
-            return UpdateDefaults().GetInt(keyPath, out i);
+            return GetUserInt(keyPath, out i)
+                || UpdateDefaults().GetInt(keyPath, out i);
         }
         public bool GetString(string keyPath, out string s)
         {
-            if(GetUserString(keyPath, out s)) return true;
-            return UpdateDefaults().GetString(keyPath, out s);
+            return GetUserString(keyPath, out s) 
+                || UpdateDefaults().GetString(keyPath, out s);
+        }
+
+        public List<string> GetStringList(string prefix, int maxCount = 13)
+        {
+            List<string> serial = new List<string>();
+            for (int i = 0; i < maxCount; ++i)
+            {
+                if (GetString($"{prefix}{i}", out string s))
+                    serial.Add(s);
+            }
+            return serial;
         }
 
         bool GetUserString(string keyPath, out string s)

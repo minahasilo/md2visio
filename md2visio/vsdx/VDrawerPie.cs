@@ -17,25 +17,27 @@ namespace md2visio.vsdx
 
         override public void Draw()
         {
-            // sector
-            List<Tuple<int, int, int>> colors = VColorGenerator.Generate(figure.InnerNodes.Count);
             total = figure.TotalNum();
+
+            // sector
             int ci = 0;
+            List<VColor> colors = GetPieColors();
             foreach(INode item in figure.InnerNodes.Values)
             {
-                Shape sector = DropSector(((PieDataItem)item), colors[ci++]);
+                Shape sector = DropSector((PieDataItem)item, colors[(ci++) % colors.Count]);
                 radius = Width(sector);
             }
 
             // title
             Shape title = DropText(figure.Title, new SizeF(2, 2));
             AlignBottom(title, radius + 0.05);
+            SetTextColor(title, "config.themeVariables.pieTitleTextColor");
 
             // outer stroke
             DrawOuterStroke(figure);
         }
 
-        public Shape DropSector(PieDataItem item, Tuple<int,int,int> color)
+        public Shape DropSector(PieDataItem item, VColor color)
         {
             double percent = item.Data / total;
             Shape sector = visioPage.Drop(GetMaster("sector"), 0, 0);
@@ -54,7 +56,8 @@ namespace md2visio.vsdx
             if (pie.Directive.GetDouble("init.pie.textPosition", out double tpos)) 
                 textPosition = tpos;
             (x, y) = ControlPoint(Width(sector) * textPosition, drawnAngle + rad / 2);
-            DropText($"{(percent * 100).ToString("N0")}%", x, y);
+            Shape text = DropText($"{(percent * 100).ToString("N0")}%", x, y);
+            SetTextColor(text, "config.themeVariables.pieSectionTextColor");
 
             drawnAngle += rad;
 
@@ -64,25 +67,28 @@ namespace md2visio.vsdx
                 tagBound = new VBoundary();
                 tagBound.AlignLeftTop(radius + 0.5, radius);
             }            
-            DrawTag(color, item.ID, item.Data, pie.ShowData);
+            DrawLegend(color, item.ID, item.Data, pie.ShowData);
 
             return sector;
         }
 
-        void DrawTag(Tuple<int,int,int> color, string title, double data, bool showData)
+        void DrawLegend(VColor color, string title, double data, bool showData)
         {
+            // rect
             Shape tag = visioPage.Drop(GetMaster("[]"), 0, 0);
-            SetFillForegnd(tag, color);
+            SetFillForegnd(tag, color);            
             SetWidth(tag, "3 mm");
             SetHeight(tag, "3 mm");            
             AlignLeftTop(tag, tagBound.Left, tagBound.Top);
             tagBound.Right = tagBound.Left + Width(tag);
             tagBound.Bottom = tagBound.Top - Height(tag);
 
+            // text
             string text = string.Format("{0}{1}", title, showData ? $" [{data.ToString("N2")}]" : "");
             Shape textShape = DropText(text, 0, PinY(tag));
             visioApp.DoCmd((short)VisUICmds.visCmdTextHAlignLeft);
             AlignLeft(textShape, new VShapeBoundary(tag).Right + 0.01);
+            SetTextColor(textShape, "config.themeVariables.pieLegendTextColor");
 
             tagBound.AlignTop(tagBound.Bottom - 0.02);
         }
@@ -132,6 +138,17 @@ namespace md2visio.vsdx
                 y = -r * Math.Sin(2 * pi - rad);
             }
             return (x, y);
+        }
+
+        List<VColor> GetPieColors()
+        {
+            List<VColor > colors = new List<VColor>();
+            foreach(string color in GetStringList("config.themeVariables.pie"))
+                colors.Add(VColor.Create(color));
+
+            this.Assert(colors.Count > 0, "error reading 'config.themeVariables.pie?', theme files may not load correctly");
+
+            return colors;
         }
     }
 }

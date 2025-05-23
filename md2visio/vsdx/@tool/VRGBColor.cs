@@ -1,5 +1,4 @@
-﻿using md2visio.vsdx._tool;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace md2visio.vsdx.@tool

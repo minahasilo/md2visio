@@ -1,6 +1,7 @@
 ```mermaid
 ---
 config:
+  theme: 'dark'
   themeVariables: 
     pieOuterStrokeWidth: "1px"
 ---
